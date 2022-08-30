@@ -643,6 +643,44 @@ class AgentApi {
         };
         this.connection.send(data);
     }
+
+
+    /**
+     * 通话中设置业务参数
+     * @param attachDatas {"call_data":"1","trans_para":"2"}
+     */
+    setAttachDatas(attachDatas) {
+        if(!attachDatas){
+            utils.showMessage("API-setAttachDatas参数不能为空！");
+            return;
+        }
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法设置业务参数！");
+            return;
+        }
+        let data = {
+            "messageId":230,
+            "thisDN":this.agent.thisDN,
+            "agentID":this.agent.agentID,
+            "attachDatas":attachDatas,
+            callId:line.callId
+        };
+        this.connection.send(data);
+    }
+
+    /**
+     * 通话中设置随路数据(业务参数)(推荐)
+     * @param callData String类型
+     */
+    setCallData(callData) {
+        if("string" != typeof callData){
+            utils.showMessage("API-setCallData需要String类型参数！");
+            return;
+        }
+        this.setAttachDatas({"call_data":callData})
+    }
+
     // cti.startDialing(tenantID, outboundID, dialMode) {
     //     var agentID =  cti.Agent.getInstance().getAgentID();
     //     var thisDN = cti.Agent.getInstance().getThisDN();

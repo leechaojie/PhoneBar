@@ -72,10 +72,10 @@ class Timer extends EventEmitter {
         let secondTime = this.seconds;// 秒
         let minuteTime = 0;// 分
         let hourTime = 0;// 小时
-        if (secondTime > 60) {
+        if (secondTime >= 60) {
             minuteTime = Math.floor(secondTime / 60);
             secondTime = Math.floor(secondTime % 60);
-            if (minuteTime > 60) {
+            if (minuteTime >= 60) {
                 hourTime = Math.floor(minuteTime / 60);
                 minuteTime = Math.floor(minuteTime % 60);
             }

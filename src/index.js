@@ -43,6 +43,7 @@ class PhoneBar extends EventEmitter {
      * @param onHangup  挂机事件
      * @param onAgentStatusChange 坐席状态变更事件
      * @param onLinkDisconnected 连接被服务器断开事件
+     * @param onUserInputCompleted 用户输入完成事件
      */
     constructor({
                     renderTo = '',
@@ -72,7 +73,8 @@ class PhoneBar extends EventEmitter {
                     onTalking,
                     onHangup,
                     onAgentStatusChange,
-                    onLinkDisconnected
+                    onLinkDisconnected,
+                    onUserInputCompleted
                 }) {
         super();
         let options = this.options = arguments[0];
@@ -135,6 +137,7 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onHangup) && this.on('hangup', onHangup);
         utils.isFunction(onAgentStatusChange) && this.agent.on('agentStateChange', onAgentStatusChange);
         utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
+        utils.isFunction(onUserInputCompleted) && this.connection.on('userInputCompleted', onUserInputCompleted);
 
         this.eventHandler();
         this.initial();
@@ -294,7 +297,7 @@ class PhoneBar extends EventEmitter {
 
     initial() {
         // 是否自动拉起软电话
-        if (this.options.startupSoftPhone === true) {
+        if (this.options.startupSoftPhone === true && !this.options.isPhoneTakeAlong) {
             // 与软电话建立连接
             this.softPhoneConnection.open();
             // 软电话登录成功后登录电话条
@@ -398,6 +401,9 @@ class PhoneBar extends EventEmitter {
         } else if (val.type === "btnCollect"){
             // 按键采集
             this.agentApi.digitCollections(val.ivrId);
+        } else if (val.type === "btnSatisfaction") {
+            // 转满意度
+            this.agentApi.singleStepTransfer(`icp_${val.ivrId}`);
         } else if (val.ivrId) {
             // 转IVR
             this.agentApi.singleStepTransfer(`ivr_${val.ivrId}`);

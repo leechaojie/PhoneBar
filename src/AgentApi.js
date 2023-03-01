@@ -57,6 +57,9 @@ class AgentApi {
      * @param reasonCode 非就绪原因码 NotReadyReason
      */
     agentNotReady(reasonCode) {
+        if (this.agentConfig.isPhoneTakeAlong){
+            utils.showMessage('手机随行下，不能切换非就绪状态');
+        }
         if (this.agentConfig.isPhoneTakeAlong || reasonCode === 1 || reasonCode === 6) return;
         if (this.agent.state === Agent.OFFLINE) {
             utils.showMessage('未登入，不能切换状态');
@@ -75,7 +78,11 @@ class AgentApi {
      * 坐席设置为就绪状态
      */
     agentReady(isManual=false) {
-        if (this.agentConfig.isPhoneTakeAlong) return;
+        //if (this.agentConfig.isPhoneTakeAlong) return;
+        if (this.agent.state === Agent.TALKING) {
+            utils.showMessage('通话中，不能切换状态');
+            return;
+        }
         if (this.agent.state === Agent.OFFLINE) {
             utils.showMessage('未登入，不能切换状态');
             return;
@@ -643,7 +650,6 @@ class AgentApi {
         };
         this.connection.send(data);
     }
-
 
     /**
      * 通话中设置业务参数

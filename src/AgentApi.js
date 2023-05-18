@@ -687,6 +687,56 @@ class AgentApi {
         this.setAttachDatas({"call_data":callData})
     }
 
+    /**
+     * 获取队列监控技能组
+     */
+    requestCrmQueueMonitorInfo() {
+        let data = {"messageId":3203,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID};
+        this.connection.send(data);
+    }
+
+    /**
+     * 开始队列监控
+     * @param queueCodes 示例：["100108000","100108001"]
+     */
+    requestStartQueueMonitoring(queueCodes) {
+        let data = {"messageId":268, "thisDN":this.agent.thisDN, "agentID":this.agent.agentID, "queues":queueCodes};
+        this.connection.send(data);
+    }
+
+    /**
+     * 停止队列监控
+     */
+    requestStopQueueMonitoring() {
+        let data = {"messageId":269, "thisDN":this.agent.thisDN, "agentID":this.agent.agentID};
+        this.connection.send(data);
+    }
+
+    /**
+     * 插队
+     * @param queue 技能组
+     * @param callId 通话callId
+     * @param score 越小越靠前
+     */
+    jumpTheQueue(queue,callId,score) {
+        if(!queue||!callId){
+            utils.showMessage("API-jumpTheQueue参数不完整！");
+            return;
+        }
+        if(!score){
+            score = 1.0;
+        }
+        let data = {
+            "messageId":302,
+            "thisDN":this.agent.thisDN,
+            "agentID":this.agent.agentID,
+            "queueCode":queue,
+            "callId":callId,
+            "score":score
+        };
+        this.connection.send(data);
+    }
+
     // cti.startDialing(tenantID, outboundID, dialMode) {
     //     var agentID =  cti.Agent.getInstance().getAgentID();
     //     var thisDN = cti.Agent.getInstance().getThisDN();

@@ -737,6 +737,70 @@ class AgentApi {
         this.connection.send(data);
     }
 
+    /**
+     * 语音助手-播放录音
+     * @param path
+     */
+    playVoice(path) {
+        if(!path){
+            utils.showMessage("API-playVoice参数不能为空！");
+            return;
+        }
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法播放语音！");
+            return;
+        }
+        let data = {"messageId":301,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId, "filePath":path};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-播放文本
+     * @param text
+     */
+    playText(text) {
+        if(!text){
+            utils.showMessage("API-playText参数不能为空！");
+            return;
+        }
+        text = text.trim();
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法播放语音！");
+            return;
+        }
+        let data = {"messageId":301,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId, "type":1, "text":text};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-停止放音
+     */
+    stopPlay() {
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无需停止放音！");
+            return;
+        }
+        let data = {"messageId":303,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-暂停/继续放音
+     * （不支持TTS的继续放音）
+     */
+    pausePlay() {
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无需暂停/继续放音！");
+            return;
+        }
+        let data = {"messageId":304,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId};
+        this.connection.send(data);
+    }
+
     // cti.startDialing(tenantID, outboundID, dialMode) {
     //     var agentID =  cti.Agent.getInstance().getAgentID();
     //     var thisDN = cti.Agent.getInstance().getThisDN();

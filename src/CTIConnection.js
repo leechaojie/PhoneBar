@@ -165,7 +165,7 @@ class CTIConnection extends WebSocketBaseClient {
             data.messageId === MessageID.EventAgentNotReady ||
             data.messageId === MessageID.EventAgentReady) {
             // 不处理通话和振铃事件，由LinePool监控这两种状态；其他状态当存在通话时收到通知不处理；
-            if (data.reasonCode !== 1 && data.reasonCode !== 6 && this.linePool.getWorkingLineCount() === 0) {
+            if (1 === data.stateFrom || (data.reasonCode !== 1 && data.reasonCode !== 6 && this.linePool.getWorkingLineCount() === 0)) {
                 this.agent.setAgentState(Agent.convertToLocalState(data.state, data.reasonCode));
             }
             if(!this.agentConfig.isPhoneTakeAlong){

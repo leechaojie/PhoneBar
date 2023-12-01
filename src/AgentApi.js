@@ -403,14 +403,21 @@ class AgentApi {
      */
     threeWayCall(phoneNumber) {
         let line = this.linePool.getCurrentLine();
-        let thisExten = this.agent.thisDN.substring(5);
+        let thisExten = this.agent.thisDN.substring(this.agent.thisDN.length-4);
 
-        if (phoneNumber.length > 12 || phoneNumber.length < 4 ||
+        if (phoneNumber.length>18||(phoneNumber.length<18 && phoneNumber.length>12)|| phoneNumber.length < 4 ||
             (phoneNumber.length === 9 && phoneNumber.charAt(0) === '1' && phoneNumber.indexOf(this.agent.tid) !== 0)) {
             utils.showMessage("号码不符合规范");
             return false;
         }
-        if (phoneNumber.length === 4 && this.agent.tid !== '0') phoneNumber = this.agent.tid + phoneNumber;
+
+        if (phoneNumber.length === 4 && this.agent.tid !== '0'){
+            if(this.agent.tid.length==5){
+                phoneNumber=this.agent.tid + phoneNumber;
+            } else {
+                phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
+            }
+        }
 
         if (phoneNumber === line.phoneNumber) {
             utils.showMessage(`${phoneNumber}已经处于${thisExten}的会议中`);

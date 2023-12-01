@@ -362,8 +362,14 @@ class PhoneBar extends EventEmitter {
      */
     makeCall(phoneNumber) {
         phoneNumber = phoneNumber || this.dialPad.getPhoneNumber();
-        if (phoneNumber.length === 4 && this.agent.tid !== '0') phoneNumber = this.agent.tid + phoneNumber;
-        let type = (phoneNumber.length === 9 && phoneNumber.charAt(0) === '1') ? 1 : 3;
+        if (phoneNumber.length == 4 && this.agent.tid !== '0') {
+            if(this.agent.tid.length==5){
+                phoneNumber=this.agent.tid+phoneNumber;
+            } else {
+                phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
+            }
+        }
+        let type = /(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3;
         this.agentApi.makeCall(phoneNumber, -1, type, null, null, this.agent.defaultQueue);
     }
 

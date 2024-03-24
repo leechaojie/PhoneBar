@@ -62,6 +62,16 @@ declare namespace PhoneBar {
     startupSoftPhone: boolean;
 
     /**
+     * 账号
+     */
+    username: string;
+
+    /**
+     * token
+     */
+    token: string;
+
+    /**
      * 租户ID
      */
     tid: string;

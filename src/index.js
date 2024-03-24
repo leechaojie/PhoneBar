@@ -22,6 +22,8 @@ class PhoneBar extends EventEmitter {
      * @param proxyUrl  坐席代理服务地址
      * @param startupSoftPhone 是否自动启动软电话，如果自动启动必须配置SIP服务地址
      * @param sipServerUrl SIP服务地址
+     * @param username 账号
+     * @param token 页面登录的token
      * @param tid  租户ID
      * @param thisDN  分机号
      * @param pstnDN  PSTN号码，可以为null
@@ -50,6 +52,8 @@ class PhoneBar extends EventEmitter {
                     startupSoftPhone = false,
                     sipServerUrl = '127.0.0.1:5188',
 
+                    username = '',
+                    token = '',
                     tid = '',
                     thisDN = '',
                     pstnDN = '',
@@ -75,7 +79,7 @@ class PhoneBar extends EventEmitter {
                     onLinkDisconnected
                 }) {
         super();
-        let options = this.options = arguments[0];
+        const options = this.options = arguments[0];
 
         // 初始化线路信息
         this.linePool = new LinePool();
@@ -87,10 +91,13 @@ class PhoneBar extends EventEmitter {
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
             wsUrl: options.proxyUrl,
+            username: options.username,
+            token: options.token,
             agent: this.agent,
             agentConfig: this.agentConfig,
             linePool: this.linePool,
         });
+
         // 初始化创建API
         this.agentApi = this.connection.agentApi;
 

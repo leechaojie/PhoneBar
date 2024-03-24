@@ -1,5 +1,5 @@
 import utils from "./utils/utils";
-import {MessageID, DeviceState} from "./constants";
+import { MessageID, DeviceState } from "./constants";
 import Ajax from "./utils/Ajax";
 import AgentApi from "./AgentApi";
 import Log from "./utils/Log";
@@ -22,13 +22,14 @@ class CTIConnection extends WebSocketBaseClient {
      * @param linePool {LinePool}
      */
     constructor({
-                    wsUrl = 'ws://127.0.0.1:8787/websocket',
-                    agent,
-                    agentConfig,
-                    linePool,
-                }) {
-        super({'url':wsUrl, automaticOpen: false});
-
+        wsUrl = 'ws://127.0.0.1:8787/websocket',
+        agent,
+        agentConfig,
+        linePool,
+        username,
+        token
+    }) {
+        super({ 'url': wsUrl, automaticOpen: false, username, token });
         this.agent = agent;
         this.linePool = linePool;
         this.agentConfig = agentConfig;
@@ -137,12 +138,12 @@ class CTIConnection extends WebSocketBaseClient {
 
     /**
      * 协议消息转换
-     * @param event  event.data是服务器返回数据，其中messageId代表消息类型与常量MessageID对应。
+     * @param event  服务器返回数据，其中messageId代表消息类型与常量MessageID对应。
      *               坐席相关事件中event.data.deviceState与常量DeviceState对应。
      *
      */
     onMessage(event) {
-        let data = JSON.parse(event.data);
+        const data = JSON.parse(event)
         if (data == null) return;
         if (data.messageId !== MessageID.EventWelcome && data.messageId !== MessageID.EventPong) Log.log(JSON.stringify(data), 'output');
         // CTI握手成功
@@ -153,7 +154,7 @@ class CTIConnection extends WebSocketBaseClient {
             window.clearTimeout(this._loginTimeout);
             this.loggedIn = true;
         }
-        if(!this.loggedIn && data.messageId === MessageID.EventAgentReady){
+        if (!this.loggedIn && data.messageId === MessageID.EventAgentReady) {
             this.agentApi.agentLogout();
             utils.showMessage("异常就绪,已自动请求登出！");
             return;

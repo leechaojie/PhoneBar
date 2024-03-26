@@ -51,9 +51,9 @@ class WebSocketBaseClient extends EventEmitter {
 
         if (!this.client) {
             this.client = new Client({
-                debug: (str) => {
-                    console.log(str);
-                },
+                // debug: (str) => {
+                //     console.log(str);
+                // },
                 reconnectDelay: 4000,
                 heartbeatIncoming: 61000,
                 heartbeatOutgoing: 61000,
@@ -72,7 +72,7 @@ class WebSocketBaseClient extends EventEmitter {
                 Log.log('连接成功');
                 this.onOpen(frame);
                 // 客户端订阅消息的目的地址
-                this.client.subscribe('/topic/user.100003test5', (response) => {
+                this.client.subscribe(`/topic/user.${this.username}`, (response) => {
                     Log.log(response.body, 'output');
                     this.onMessage(response.body);
                 });

@@ -66,7 +66,7 @@ class CTIConnection extends WebSocketBaseClient {
         };
 
         this.sendMessage({
-            type: "login",
+            type: "request",
             thisDN: this.agent.thisDN,
             agentID: this.agent.agentID,
             message: JSON.stringify(data)
@@ -128,12 +128,12 @@ class CTIConnection extends WebSocketBaseClient {
             }, 5000);
         }
 
-        this.sendMessage({
-            type:"welcome",
-            thisDN:"",
-            agentID: "",
-            message:""
-        });
+        // this.sendMessage({
+        //     type:"welcome",
+        //     thisDN:"",
+        //     agentID: "",
+        //     message:""
+        // });
     }
 
     /**
@@ -147,9 +147,9 @@ class CTIConnection extends WebSocketBaseClient {
         if (data == null) return;
         if (data.messageId !== MessageID.EventWelcome && data.messageId !== MessageID.EventPong) Log.log(JSON.stringify(data), 'output');
         // CTI握手成功
-        if (data.messageId === MessageID.EventWelcome) {
-            this.login();
-        }
+        // if (data.messageId === MessageID.EventWelcome) {
+        //     this.login();
+        // }
         if (data.messageId === MessageID.EventAgentLogin) {
             window.clearTimeout(this._loginTimeout);
             this.loggedIn = true;

@@ -71,6 +71,7 @@ class WebSocketBaseClient extends EventEmitter {
             this.client.onConnect = (frame) => {
                 Log.log('连接成功');
                 this.onOpen(frame);
+                this.login(); // 直接登录
                 // 客户端订阅消息的目的地址
                 this.client.subscribe(`/topic/user.${this.username}`, (response) => {
                     Log.log(response.body, 'output');
@@ -97,9 +98,8 @@ class WebSocketBaseClient extends EventEmitter {
             }
 
             this.client.onStompError = (frame) => {
-                console.log("onStompError", frame);
                 Log.log("StompError-连接失败");
-                this.onError(aEvent)
+                this.onError(frame)
             };
 
             this.client.onWebSocketError = (frame) => {
@@ -120,6 +120,8 @@ class WebSocketBaseClient extends EventEmitter {
     }
 
     onOpen(aEvent) {}
+
+    login() {}
 
     onClose(aEvent) {}
 

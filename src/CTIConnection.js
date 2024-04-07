@@ -26,10 +26,11 @@ class CTIConnection extends WebSocketBaseClient {
         agent,
         agentConfig,
         linePool,
+        debug,
         username,
         token
     }) {
-        super({ 'url': wsUrl, automaticOpen: false, username, token });
+        super({ 'url': wsUrl, automaticOpen: false, debug, username, token });
         this.agent = agent;
         this.linePool = linePool;
         this.agentConfig = agentConfig;

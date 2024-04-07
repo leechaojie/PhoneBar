@@ -52,6 +52,7 @@ class PhoneBar extends EventEmitter {
                     startupSoftPhone = false,
                     sipServerUrl = '127.0.0.1:5188',
 
+                    debug = false,
                     username = '',
                     token = '',
                     tid = '',
@@ -91,6 +92,7 @@ class PhoneBar extends EventEmitter {
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
             wsUrl: options.proxyUrl,
+            debug: options.debug,
             username: options.username,
             token: options.token,
             agent: this.agent,

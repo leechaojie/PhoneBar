@@ -11,9 +11,8 @@
 .phonebar-nav {
     width: auto;
     height: auto;
-    display: inline-block;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 .phonebar-nav ul {
     margin: 0;
@@ -31,20 +30,19 @@
     text-decoration: none
 }
 
-
 .phonebar-nav .operation {
-    min-width: 35px;
+    min-width: 48px;
     cursor: pointer;
-    padding: 5px;
     float: left;
     position: relative
 }
 .phonebar-nav .operation:hover {
-    background: #fff;
+    background: rgba(225, 225, 225, 0.3);
     transition: all .3s ease
 }
 .phonebar-nav .operation.open {
-    background: #fff;
+    font-size: 12px;
+    background: rgba(225, 225, 225, 0.3);
 }
 
 
@@ -52,89 +50,101 @@
 .phonebar-nav .operation>em {
     background: url('../assets/images/call_icon.png');
     display: block;
-    width: 25px;
-    height: 25px;
-    margin-left: 5px;
+    width: 20px;
+    height: 20px;
+    margin: 3px auto;
 }
 
+/* 呼出 */
 .phonebar-nav .operation .opendialpad {
-    background-position: -25px 0
+    background-position: 0 0
 }
 .phonebar-nav .operation.disabled .opendialpad {
-    background-position: -25px -75px
+    background-position: -0 -20px
 }
 
+/* 应答 */
 .phonebar-nav .operation .answer {
-    background-position: -50px 0
+    background-position: -20px 0
 }
 .phonebar-nav .operation.disabled .answer {
-    background-position: -50px -75px
+    background-position: -20px -20px
 }
 
+/* 挂断 */
 .phonebar-nav .operation .hangup {
-    background-position: -75px 0
+    background-position: -40px 0
 }
 .phonebar-nav .operation.disabled .hangup {
-    background-position: -75px -75px
+    background-position: -40px -20px
 }
 
+/* 保持 */
 .phonebar-nav .operation .hold {
-    background-position: -100px 0
+    background-position: -60px 0
 }
 .phonebar-nav .operation.disabled .hold {
-    background-position: -100px -75px
+    background-position: -60px -20px
 }
 
+/* 接回 */
 .phonebar-nav .operation .retrieve {
-    background-position: -125px 0
+    background-position: -80px 0
 }
 .phonebar-nav .operation.disabled .retrieve {
-    background-position: -125px -75px
+    background-position: -80px -20px
 }
 
-.phonebar-nav .operation .rollout {
-    background-position: 0 -50px
-}
-.phonebar-nav .operation.disabled .rollout {
-    background-position: 0 -125px
-}
-
+/* 转接 */
 .phonebar-nav .operation .transfer {
-    background-position: -25px -25px
+    background-position: -100px 0
 }
 .phonebar-nav .operation.disabled .transfer {
-    background-position: -25px -100px
+    background-position: -100px -20px
 }
 
+/* 转出 */
+.phonebar-nav .operation .rollout {
+    background-position: -120px 0
+}
+.phonebar-nav .operation.disabled .rollout {
+    background-position: 120px -20px
+}
+
+/* 会议 */
 .phonebar-nav .operation .conference {
-    background-position: -50px -25px
+    background-position: -140px 0
 }
 .phonebar-nav .operation.disabled .conference {
-    background-position: -50px -100px
+    background-position: -140px -20px
 }
 
 .phonebar-nav .operation_text {
     display: block;
     min-width: 35px;
-    height: 15px;
-    font-weight: 600;
+    height: 18px;
     font-size: 12px;
-    line-height: 15px;
+    line-height: 18px;
     text-align: center;
-    color: #a7b1c2;
+    color: #FFF;
+}
+
+.phonebar-nav .operation.disabled .operation_text {
+    color: rgba(225, 225, 225, 0.3)
 }
 
 
 /*坐席状态*/
 .phonebar-nav .call {
-    padding: 10px 10px !important;
+    padding: 7px 8px 5px 0 !important;
 }
 .phonebar-nav .call>span {
     background: url('../assets/images/call_state.png');
     display: block;
     background-size: cover;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    margin-top: 3px;
     float: left;
 }
 .phonebar-nav .call>span.agentstate-ready {
@@ -160,13 +170,12 @@
 }
 .phonebar-nav .call>.operation_text {
     width: auto;
-    height: 30px;
-    margin-left: 5px;
-    font-weight: 600;
+    height: 33px;
+    margin-left: 8px;
     font-size: 12px;
-    line-height: 15px;
+    line-height: 16px;
     text-align: center;
-    color: #a7b1c2;
+    color: #fff;
     float: left;
 }
 .phonebar-nav .call>.operation_text span {

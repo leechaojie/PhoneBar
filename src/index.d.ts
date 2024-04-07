@@ -66,7 +66,7 @@ declare namespace PhoneBar {
      * 
      * 请注意，输出可能非常详细，并且可能包含敏感信息（如密码、令牌等）。
      */
-    debug: string;
+    debug?: string;
 
     /**
      * 账号

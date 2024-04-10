@@ -26,11 +26,49 @@ declare class PhoneBar {
      * 缺省插件以 alert 方式弹出，用户可以覆盖的弹窗方法。提示消息默认使用 alert
      */
     showMessage(msg: string): void;
+
+    /**
+     * 验证号码是否合法
+     * @param num
+     * @returns {boolean}
+     */
     checkPhoneNumber(num: number | string): boolean;
+    
+    /**
+     * json转url参数
+     * @param param
+     * @returns {string}
+     */
     parseParam(param: IObject): string;
     isFunction(f: any): boolean;
     firstUpperCase(str: string): any;
     trim(str: string): any;
+  };
+
+  /**
+   * 日志打印类，用于用户复写后自定义显示
+   */
+  static Log: {
+    /**
+     * 基础日志
+     * @param message 日志消息
+     * @param args
+     */
+    log(message: string, ...args: any[]): void;
+
+    /**
+     * 信息日志
+     * @param message 日志消息
+     * @param args
+     */
+    info(message: string, ...args: any[]): void;
+
+    /**
+     * 错误日志
+     * @param message 日志消息
+     * @param args
+     */
+    error(message: string, ...args: any[]): void;
   };
 }
 
@@ -199,29 +237,4 @@ declare namespace PhoneBar {
   }
 }
 
-declare class Log {
-  /**
-   * 基础日志
-   * @param message 日志消息
-   * @param args
-   */
-  static log(message: string, ...args: string[]): void;
-
-  /**
-   * 信息日志
-   * @param message 日志消息
-   * @param args
-   */
-  static info(message: string, ...args: string[]): void;
-
-  /**
-   * 错误日志
-   * @param message 日志消息
-   * @param args
-   */
-  static error(message: string, ...args: string[]): void;
-}
-
 export = PhoneBar;
-
-// export as namespace PhoneBar;

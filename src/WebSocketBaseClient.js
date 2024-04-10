@@ -1,7 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import Log from "./utils/Log";
 import { Client } from '@stomp/stompjs';
-import * as SockJS from 'sockjs-client';
+// import * as SockJS from 'sockjs-client';
+import SockJS from 'sockjs-client/dist/sockjs.min.js';
 
 /**
  * websocket客户端基础类，用于子类继承

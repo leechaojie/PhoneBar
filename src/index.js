@@ -53,7 +53,7 @@ class PhoneBar extends EventEmitter {
                     sipServerUrl = '127.0.0.1:5188',
 
                     debug = false,
-                    log = false,
+                    log = true,
                     username = '',
                     token = '',
                     tid = '',

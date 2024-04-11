@@ -104,7 +104,14 @@ declare namespace PhoneBar {
      * 
      * 请注意，输出可能非常详细，并且可能包含敏感信息（如密码、令牌等）。
      */
-    debug?: string;
+    debug?: boolean;
+
+    /**
+     * 开启系统日志
+     * 
+     * 控制台打印话条日志。
+     */
+    log?: boolean;
 
     /**
      * 账号

@@ -53,7 +53,7 @@ class CTIConnection extends WebSocketBaseClient {
             }
         }, 20000);
 
-        let data = this.loggedIn ? {
+        const data = this.loggedIn ? {
             "type": "ping",
             "thisDN": this.agent.thisDN,
             "agentID": this.agent.agentID,
@@ -73,16 +73,16 @@ class CTIConnection extends WebSocketBaseClient {
             message: JSON.stringify(data)
         });
 
-        // 30001 消息体
+        // 3001 消息体
         const msg3001 = {
-            "messageId": 30001,
+            "messageId": 3001,
             "thisDN": this.agent.thisDN,
             "agentID": this.agent.agentID,
             "thisQueues": this.agent.thisQueues,
             "defaultQueue": this.agent.defaultQueue,
         }
 
-        // 发送 30001
+        // 发送 3001
         this.sendMessage({
             type: "request",
             thisDN: this.agent.thisDN,
@@ -168,7 +168,9 @@ class CTIConnection extends WebSocketBaseClient {
         // if (data.messageId === MessageID.EventWelcome) {
         //     this.login();
         // }
-        if (data.messageId === MessageID.EventAgentLogin) {
+
+        // if (data.messageId === MessageID.EventAgentLogin) { // 注释此行代码，为了解决页面刷新后状态离线的问题
+        if (data.messageId !== MessageID.EventAgentLogout) {
             window.clearTimeout(this._loginTimeout);
             this.loggedIn = true;
         }

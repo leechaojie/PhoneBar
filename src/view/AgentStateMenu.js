@@ -141,7 +141,8 @@ class AgentStateMenu extends EventEmitter {
         if (state === Agent.OFFLINE) {
             this._actionElementMap['logout'].style.display = 'none';
             this._actionElementMap['login'].style.display = 'block';
-        } else if (state === Agent.BUSY) {
+        // } else if (state === Agent.BUSY) { // 注释此行代码，为了解决状态为整理中等非示忙状态时，页面刷新后菜单栏离线按钮变成登入的问题
+        } else {
             this._actionElementMap['login'].style.display = 'none';
             this._actionElementMap['logout'].style.display = 'block';
         }

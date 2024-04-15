@@ -10,7 +10,7 @@ declare class PhoneBar {
   /**
    * 属性配置
    */
-  static options: PhoneBar.Options; 
+  readonly options: PhoneBar.Options; 
 
   /**
    * 销毁组件

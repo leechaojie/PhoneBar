@@ -72,6 +72,23 @@ class CTIConnection extends WebSocketBaseClient {
             agentID: this.agent.agentID,
             message: JSON.stringify(data)
         });
+
+        // 30001 消息体
+        const msg3001 = {
+            "messageId": 30001,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            "thisQueues": this.agent.thisQueues,
+            "defaultQueue": this.agent.defaultQueue,
+        }
+
+        // 发送 30001
+        this.sendMessage({
+            type: "request",
+            thisDN: this.agent.thisDN,
+            agentID: this.agent.agentID,
+            message: JSON.stringify(msg3001)
+        });
     }
 
     doClose() {

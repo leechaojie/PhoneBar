@@ -5,7 +5,12 @@ interface IObject<T = any> {
 }
 
 declare class PhoneBar {
-  constructor(options: PhoneBar.Options);
+  constructor(options: PhoneBar.Options);  
+  
+  /**
+   * 属性配置
+   */
+  static options: PhoneBar.Options; 
 
   /**
    * 销毁组件

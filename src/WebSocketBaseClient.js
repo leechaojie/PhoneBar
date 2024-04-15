@@ -72,14 +72,17 @@ class WebSocketBaseClient extends EventEmitter {
             this.client.onConnect = (frame) => {
                 Log.log('连接成功');
                 this.onOpen(frame);
-                this.login(); // 直接登录
                 // 客户端订阅消息的目的地址
                 this.client.subscribe(`/topic/user.${this.username}`, (response) => {
                     if (response.body === 'ERROR') {
                         Log.log('订阅失败');
+                    } else if (response.body === 'SUCCESS') {
+                        this.login();
+                    } else {
+                        this.onMessage(response.body);
                     }
+                    
                     Log.log(response.body, 'output');
-                    this.onMessage(response.body);
                 });
                 
             };

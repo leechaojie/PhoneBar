@@ -173,10 +173,10 @@ class CTIConnection extends WebSocketBaseClient {
             this.agent.setAgentState(Agent.convertToLocalState(data.state, data.reasonCode));
             this.agent.setDeviceState(data.deviceState);
             this.loggedIn = false;
-            Ajax.send({
-                url: '/application/is_pta/' + data.thisDN,
-                type: 'get',
-            });
+            // Ajax.send({
+            //     url: '/application/is_pta/' + data.thisDN,
+            //     type: 'get',
+            // });
         } else if (data.messageId === MessageID.EventDialing ||
             data.messageId === MessageID.EventRinging ||
             data.messageId === MessageID.EventEstablished ||

@@ -37,6 +37,7 @@ class PhoneBar extends EventEmitter {
      * @param isPhoneTakeAlong  是否手机随行，即手机在线，默认为false
      * @param workPhone  随行手机号
      * @param autoAnswer  自动应答
+     * @param customNotReadyReason  自定义坐席状态
      * @param onScreenPopup 弹屏事件
      * @param onRinging  呼入振铃事件
      * @param onTalking  接通事件
@@ -66,6 +67,8 @@ class PhoneBar extends EventEmitter {
                     isPhoneTakeAlong = false,
                     workPhone = '',
                     autoAnswer = false,
+                    
+                    customNotReadyReason = [],
 
                     onScreenPopup,
                     onRinging,
@@ -76,6 +79,7 @@ class PhoneBar extends EventEmitter {
                 }) {
         super();
         let options = this.options = arguments[0];
+        options.customNotReadyReason = customNotReadyReason;
 
         // 初始化线路信息
         this.linePool = new LinePool();
@@ -83,6 +87,8 @@ class PhoneBar extends EventEmitter {
         this.agentConfig = new AgentConfig(options);
         // 初始化坐席数据
         this.agent = new Agent(options);
+        // 初始化坐席自定义状态
+        Agent.setCustomNotReadyReason(options.customNotReadyReason);
 
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
@@ -208,7 +214,7 @@ class PhoneBar extends EventEmitter {
 
         // 坐席状态变更事件处理函数
         this.agent.on('agentStateChange', (state) => {
-            console.log("------坐席状态变更事件处理函数--------------");
+            console.log("------坐席状态变更事件处理函数--------------", state);
             this.getComponent('agentState').changeAgentState(state);
             this.handlerOnMediaNotification('agentStateChange', state);       
 
@@ -358,16 +364,50 @@ class PhoneBar extends EventEmitter {
             return false;
         }
 
-        if (action === 'ready') {
-            this.agentApi.agentReady(true);
-        } else if (action === 'login') {
-            this.agentApi.agentLogin();
-        } else if (action === 'logout') {
-            this.agentApi.agentLogout();
-        } else if (action === 'busy') {
-            this.agentApi.agentNotReady(3);
-        } else if (action === 'rest') {
-            this.agentApi.agentNotReady(5);
+        switch (action) {
+            case 'ready':
+                this.agentApi.agentReady(true);
+                break;
+
+            case 'login':
+                this.agentApi.agentLogin();
+                break;
+
+            case 'logout':
+                this.agentApi.agentLogout();
+                break;
+
+            case 'busy':
+                this.agentApi.agentNotReady(3);
+                break;
+
+            case 'resting':
+                this.agentApi.agentNotReady(5);
+                break;
+
+            case 'reason11':
+                this.agentApi.agentNotReady(11);
+                break;
+
+            case 'reason12':
+                this.agentApi.agentNotReady(12);
+                break;
+
+            case 'reason13':
+                this.agentApi.agentNotReady(13);
+                break;
+
+            case 'reason14':
+                this.agentApi.agentNotReady(14);
+                break;
+
+            case 'reason15':
+                this.agentApi.agentNotReady(15);
+                break;
+
+            case 'reason17':
+                this.agentApi.agentNotReady(17);
+                break;
         }
 
     }

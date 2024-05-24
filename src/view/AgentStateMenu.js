@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import utils from "../utils/utils";
 import Agent from "../model/Agent";
+import {AgentState, CallType, NotReadyReason} from '../constants';
 
 let autoIncrementId = 0;
 
@@ -25,13 +26,20 @@ class AgentStateMenu extends EventEmitter {
         /*
         * 所有可操作动作
         * */
-        this.actionList = [
-            {'name': '就绪', 'value': 'ready', 'visible': true},
-            {'name': '示忙', 'value': 'busy', 'visible': true},
-            {'name': '休息', 'value': 'rest', 'visible': true},
-            {'name': '离线', 'value': 'logout', 'visible': false},
-            {'name': '登入', 'value': 'login', 'visible': true}
-        ];
+        this.actionList = [];
+        const predefinedMenu = [
+            { name: '离线', value: 'logout', visible: false },
+            { name: '登入', value: 'login', visible: true }
+        ]
+
+        // 组装下拉菜单
+        for (let stateKey in Agent.stateDict) {
+            if (Agent.allowModifyStates .includes(stateKey)) {
+                this.actionList.push({ name: Agent.stateDict[stateKey].name, value: stateKey, 'visible': true});
+            }
+        }
+    
+        this.actionList.push(...predefinedMenu);
 
         this._visible = visible;
         this._enabled = enabled;
@@ -133,8 +141,16 @@ class AgentStateMenu extends EventEmitter {
     }
 
     changeAgentState(state) {
+        console.log('state', state);
         this._selectedState = state;
-        this.agentStateIcon.className = `agentstate-${state}`;
+
+        // 自定义状态设置为 rest
+        const customState = ['reason11', 'reason12', 'reason13', 'reason14', 'reason15', 'reason17'];
+        if (customState.includes(state)) {
+            this.agentStateIcon.className = `agentstate-resting`;
+        } else {
+            this.agentStateIcon.className = `agentstate-${state}`;
+        }
         this.agentStateText.innerText = Agent.getStateName(state);
 
         // 当点击离线时隐藏离线选项，显示登入选项

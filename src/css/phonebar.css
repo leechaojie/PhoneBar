@@ -186,11 +186,29 @@
 .phonebar-nav .dropdown-menu i.busy {
     background: #1c84c6;
 }
-.phonebar-nav .dropdown-menu i.rest {
+.phonebar-nav .dropdown-menu i.resting {
     background: #23c6c8;
 }
 .phonebar-nav .dropdown-menu i.login, i.logout {
     background: #f8ac59;
+}
+.phonebar-nav .dropdown-menu i.reason11 {
+    background: #795548;
+}
+.phonebar-nav .dropdown-menu i.reason12 {
+    background: #5c6bc0;
+}
+.phonebar-nav .dropdown-menu i.reason13 {
+    background: #66bb6a;
+}
+.phonebar-nav .dropdown-menu i.reason14 {
+    background: #26c6da;
+}
+.phonebar-nav .dropdown-menu i.reason15 {
+    background: #8bc34a;
+}
+.phonebar-nav .dropdown-menu i.reason17 {
+    background: #c83bbc;
 }
 
 

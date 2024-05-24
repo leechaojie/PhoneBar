@@ -116,6 +116,24 @@ class Agent extends EventEmitter {
     }
 
     /**
+     * 设置自定义未就绪状态码
+     * @param notReadyReason
+     */
+    static setCustomNotReadyReason(notReadyReason) {
+        for (let reason of notReadyReason) {
+            let _notReadyStateKey = Agent.reasonCodeMapping[reason.code];
+            // 扩展的未就绪状态
+            if (!_notReadyStateKey) {
+                _notReadyStateKey = `reason${reason.code}`;
+                Agent.reasonCodeMapping[reason.code] = _notReadyStateKey;
+            }
+            Agent.stateDict[_notReadyStateKey] = {name: reason.name, rawState: AgentState.NOTREADY, reason: reason.code};
+        }
+
+        console.log('stateDict', Agent.stateDict);
+    }
+
+    /**
      * 将服务器状态值转化为本系统可读的值
      *
      * @param rawState
@@ -140,6 +158,24 @@ class Agent extends EventEmitter {
                     break;
                 case 6:
                     state = Agent.RINGING;
+                    break;
+                case 11:
+                    state = Agent.REASON11;
+                    break;
+                case 12:
+                    state = Agent.REASON12;
+                    break;
+                case 13:
+                    state = Agent.REASON13;
+                    break;
+                case 14:
+                    state = Agent.REASON14;
+                    break;
+                case 15:
+                    state = Agent.REASON15;
+                    break;
+                case 17:
+                    state = Agent.REASON17;
                     break;
                 default:
                     state = Agent.BUSY;
@@ -171,16 +207,38 @@ Agent.BUSY = 'busy';
 Agent.RESTING = 'resting';
 Agent.NEATENING = 'neatening';
 Agent.TALKING = 'talking';
-Agent.RINGING = 'ringing';
+Agent.REASON11 = 'reason11';
+Agent.REASON12 = 'reason12';
+Agent.REASON13 = 'reason13';
+Agent.REASON14 = 'reason14';
+Agent.REASON15 = 'reason15';
+Agent.REASON17 = 'reason17';
+// 允许修改的状态
+Agent.allowModifyStates = [
+    Agent.READY,
+    Agent.BUSY,
+    Agent.RESTING,
+    Agent.REASON11,
+    Agent.REASON12,
+    Agent.REASON13,
+    Agent.REASON14,
+    Agent.REASON15,
+    Agent.REASON17
+];
 /* 状态字典 */
 Agent.stateDict = {
     [Agent.OFFLINE]: {name: '离线', rawState: AgentState.OFFLINE, reason: NotReadyReason.UNKNOWN},
     [Agent.READY]: {name: '就绪', rawState: AgentState.READY, reason: NotReadyReason.UNKNOWN},
     [Agent.BUSY]: {name: '示忙', rawState: AgentState.NOTREADY, reason: NotReadyReason.BUSY},
-    [Agent.RESTING]: {name: '休息中', rawState: AgentState.NOTREADY, reason: NotReadyReason.RESTING},
+    [Agent.RESTING]: {name: '休息', rawState: AgentState.NOTREADY, reason: NotReadyReason.RESTING},
     [Agent.NEATENING]: {name: '整理中', rawState: AgentState.NOTREADY, reason: NotReadyReason.NEATENING},
     [Agent.TALKING]: {name: '通话中', rawState: AgentState.NOTREADY, reason: NotReadyReason.TALKING},
     [Agent.RINGING]: {name: '振铃中', rawState: AgentState.NOTREADY, reason: NotReadyReason.RINGING},
+};
+Agent.reasonCodeMapping = {
+    [NotReadyReason.BUSY]: Agent.BUSY,
+    [NotReadyReason.RESTING]: Agent.RESTING,
+    [NotReadyReason.NEATENING]: Agent.NEATENING,
 };
 
 export default Agent;

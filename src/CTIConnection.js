@@ -153,7 +153,7 @@ class CTIConnection extends WebSocketBaseClient {
             window.clearTimeout(this._loginTimeout);
             this.loggedIn = true;
         }
-        if(!this.loggedIn && data.messageId === MessageID.EventAgentReady){
+        if(!this.loggedIn && data.messageId === MessageID.EventAgentReady && !this.agentConfig.isPhoneTakeAlong){
             this.agentApi.agentLogout();
             utils.showMessage("异常就绪,已自动请求登出！");
             return;
@@ -165,10 +165,12 @@ class CTIConnection extends WebSocketBaseClient {
             data.messageId === MessageID.EventAgentNotReady ||
             data.messageId === MessageID.EventAgentReady) {
             // 不处理通话和振铃事件，由LinePool监控这两种状态；其他状态当存在通话时收到通知不处理；
-            if (data.reasonCode !== 1 && data.reasonCode !== 6 && this.linePool.getWorkingLineCount() === 0) {
+            if (1 === data.stateFrom || (data.reasonCode !== 1 && data.reasonCode !== 6 && this.linePool.getWorkingLineCount() === 0)) {
                 this.agent.setAgentState(Agent.convertToLocalState(data.state, data.reasonCode));
             }
-            this.agent.setDeviceState(data.deviceState);
+            if(!this.agentConfig.isPhoneTakeAlong){
+                this.agent.setDeviceState(data.deviceState);
+            }
         } else if (data.messageId === MessageID.EventAgentLogout) {
             this.agent.setAgentState(Agent.convertToLocalState(data.state, data.reasonCode));
             this.agent.setDeviceState(data.deviceState);
@@ -187,6 +189,9 @@ class CTIConnection extends WebSocketBaseClient {
             this.linePool.updateLineDate(data);
         } else if (data.messageId === MessageID.EventError) {
             utils.showMessage(data.errorMessage);
+        } else if(data.messageId==527) {
+            //"send2Agent":"1","digits":"456"
+            this.emit('userInputCompleted', data);
         } else if (data.messageId === MessageID.EventLinkDisconnected && data.reason === 1) {
             if (data.reason === 1) {
                 utils.showMessage("该坐席已经从其它地方登入，请退出!");

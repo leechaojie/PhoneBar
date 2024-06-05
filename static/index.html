@@ -129,6 +129,13 @@
         }
 
         var thisQueues = $('#thisQueues').val() ? $('#thisQueues').val().split(',') : [];
+        var tid = $("#corpVccIdTxt").val();
+        var agentId;
+        if(tid.length==5){
+            agentId = tid + $("#agentIdTxt").val();
+        } else if(tid.length==6) {
+            agentId = "000002"+tid+"08"+$("#agentIdTxt").val();
+        }
         phoneBar = new PhoneBar({
             renderTo: 'test1',
             proxyUrl: $("#ccHostIpTxt").val(),
@@ -136,8 +143,8 @@
             startupSoftPhone: $('#startupSoftPhone').is(':checked'),
 
             tid: $("#corpVccIdTxt").val(),
-            thisDN: $("#corpVccIdTxt").val() + $("#agentIdTxt").val(),
-            agentID: $("#corpVccIdTxt").val() + $("#agentIdTxt").val(),
+            thisDN: agentId,
+            agentID: agentId,
             password: $("#password").val(),
             loginType: parseInt($('#loginType').val()),
             thisQueues: thisQueues,
@@ -154,6 +161,7 @@
             onTalking: function (callInfo) {console.log('接通事件：', callInfo);},
             onHangup: function (callInfo) {console.log('挂机事件：', callInfo);},
             onLinkDisconnected: function() {location.href = 'login.html'},
+            onUserInputCompleted: function(data) {console.log('用户输入完成事件：', data);showMessage(data.digits)}
         });
     }
 

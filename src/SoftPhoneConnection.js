@@ -192,6 +192,10 @@ class SoftPhoneConnection extends EventEmitter {
      * 开始ping
      */
     startPing() {
+        //防抖
+        if(this.pingTimeHandler){
+            clearTimeout(this.pingTimeHandler);
+        }
         this.pingTimeHandler = setTimeout(() => {
             this.startPing()
         }, this.pingInterval);

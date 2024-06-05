@@ -22,6 +22,9 @@ const utils = {
             if (num.indexOf("ivr_") === 0) {
                 return true;
             }
+            if (num.indexOf("icp_") === 0) {
+                return true;
+            }
             for (let i = 0; i < num.length; i++) {
                 let c = num.charAt(i);
                 if (validNumber.indexOf(c) === -1) {

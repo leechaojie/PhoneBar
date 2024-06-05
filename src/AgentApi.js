@@ -57,6 +57,9 @@ class AgentApi {
      * @param reasonCode 非就绪原因码 NotReadyReason
      */
     agentNotReady(reasonCode) {
+        if (this.agentConfig.isPhoneTakeAlong){
+            utils.showMessage('手机随行下，不能切换非就绪状态');
+        }
         if (this.agentConfig.isPhoneTakeAlong || reasonCode === 1 || reasonCode === 6) return;
         if (this.agent.state === Agent.OFFLINE) {
             utils.showMessage('未登入，不能切换状态');
@@ -75,7 +78,11 @@ class AgentApi {
      * 坐席设置为就绪状态
      */
     agentReady(isManual=false) {
-        if (this.agentConfig.isPhoneTakeAlong) return;
+        //if (this.agentConfig.isPhoneTakeAlong) return;
+        if (this.agent.state === Agent.TALKING) {
+            utils.showMessage('通话中，不能切换状态');
+            return;
+        }
         if (this.agent.state === Agent.OFFLINE) {
             utils.showMessage('未登入，不能切换状态');
             return;
@@ -305,7 +312,29 @@ class AgentApi {
             };
             this.connection.send(data);
         }
-    };
+    }
+
+    /**
+     * 按键采集
+     * @param ivr_id
+     */
+    digitCollections(ivr_id) {
+        let line = this.linePool.getCurrentLine();
+        if(line.callId==''){
+            utils.showMessage("当前线路不在通话中");
+        }else{
+            let data = {
+                "messageId": 227,
+                "thisDN": this.agent.thisDN,
+                "agentID": this.agent.agentID,
+                "ivrID":ivr_id,
+                "state":"begin",
+                "callID": line.callId
+            };
+            this.connection.send(data);
+        }
+    }
+
 
     /**
      * 呼叫转移
@@ -374,14 +403,21 @@ class AgentApi {
      */
     threeWayCall(phoneNumber) {
         let line = this.linePool.getCurrentLine();
-        let thisExten = this.agent.thisDN.substring(5);
+        let thisExten = this.agent.thisDN.substring(this.agent.thisDN.length-4);
 
-        if (phoneNumber.length > 12 || phoneNumber.length < 4 ||
+        if (phoneNumber.length>18||(phoneNumber.length<18 && phoneNumber.length>12)|| phoneNumber.length < 4 ||
             (phoneNumber.length === 9 && phoneNumber.charAt(0) === '1' && phoneNumber.indexOf(this.agent.tid) !== 0)) {
             utils.showMessage("号码不符合规范");
             return false;
         }
-        if (phoneNumber.length === 4 && this.agent.tid !== '0') phoneNumber = this.agent.tid + phoneNumber;
+
+        if (phoneNumber.length === 4 && this.agent.tid !== '0'){
+            if(this.agent.tid.length==5){
+                phoneNumber=this.agent.tid + phoneNumber;
+            } else {
+                phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
+            }
+        }
 
         if (phoneNumber === line.phoneNumber) {
             utils.showMessage(`${phoneNumber}已经处于${thisExten}的会议中`);
@@ -621,6 +657,157 @@ class AgentApi {
         };
         this.connection.send(data);
     }
+
+    /**
+     * 通话中设置业务参数
+     * @param attachDatas {"call_data":"1","trans_para":"2"}
+     */
+    setAttachDatas(attachDatas) {
+        if(!attachDatas){
+            utils.showMessage("API-setAttachDatas参数不能为空！");
+            return;
+        }
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法设置业务参数！");
+            return;
+        }
+        let data = {
+            "messageId":230,
+            "thisDN":this.agent.thisDN,
+            "agentID":this.agent.agentID,
+            "attachDatas":attachDatas,
+            callId:line.callId
+        };
+        this.connection.send(data);
+    }
+
+    /**
+     * 通话中设置随路数据(业务参数)(推荐)
+     * @param callData String类型
+     */
+    setCallData(callData) {
+        if("string" != typeof callData){
+            utils.showMessage("API-setCallData需要String类型参数！");
+            return;
+        }
+        this.setAttachDatas({"call_data":callData})
+    }
+
+    /**
+     * 获取队列监控技能组
+     */
+    requestCrmQueueMonitorInfo() {
+        let data = {"messageId":3203,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID};
+        this.connection.send(data);
+    }
+
+    /**
+     * 开始队列监控
+     * @param queueCodes 示例：["100108000","100108001"]
+     */
+    requestStartQueueMonitoring(queueCodes) {
+        let data = {"messageId":268, "thisDN":this.agent.thisDN, "agentID":this.agent.agentID, "queues":queueCodes};
+        this.connection.send(data);
+    }
+
+    /**
+     * 停止队列监控
+     */
+    requestStopQueueMonitoring() {
+        let data = {"messageId":269, "thisDN":this.agent.thisDN, "agentID":this.agent.agentID};
+        this.connection.send(data);
+    }
+
+    /**
+     * 插队
+     * @param queue 技能组
+     * @param callId 通话callId
+     * @param score 越小越靠前
+     */
+    jumpTheQueue(queue,callId,score) {
+        if(!queue||!callId){
+            utils.showMessage("API-jumpTheQueue参数不完整！");
+            return;
+        }
+        if(!score){
+            score = 1.0;
+        }
+        let data = {
+            "messageId":302,
+            "thisDN":this.agent.thisDN,
+            "agentID":this.agent.agentID,
+            "queueCode":queue,
+            "callId":callId,
+            "score":score
+        };
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-播放录音
+     * @param path
+     */
+    playVoice(path) {
+        if(!path){
+            utils.showMessage("API-playVoice参数不能为空！");
+            return;
+        }
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法播放语音！");
+            return;
+        }
+        let data = {"messageId":301,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId, "filePath":path};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-播放文本
+     * @param text
+     */
+    playText(text) {
+        if(!text){
+            utils.showMessage("API-playText参数不能为空！");
+            return;
+        }
+        text = text.trim();
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无法播放语音！");
+            return;
+        }
+        let data = {"messageId":301,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId, "type":1, "text":text};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-停止放音
+     */
+    stopPlay() {
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无需停止放音！");
+            return;
+        }
+        let data = {"messageId":303,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId};
+        this.connection.send(data);
+    }
+
+    /**
+     * 语音助手-暂停/继续放音
+     * （不支持TTS的继续放音）
+     */
+    pausePlay() {
+        let line = this.linePool.getCurrentLine();
+        if (line.lineState !== LineState.TALKING) {
+            utils.showMessage("当前不在通话中，无需暂停/继续放音！");
+            return;
+        }
+        let data = {"messageId":304,"thisDN":this.agent.thisDN,"agentID":this.agent.agentID, "uuid":line.callId};
+        this.connection.send(data);
+    }
+
     // cti.startDialing(tenantID, outboundID, dialMode) {
     //     var agentID =  cti.Agent.getInstance().getAgentID();
     //     var thisDN = cti.Agent.getInstance().getThisDN();

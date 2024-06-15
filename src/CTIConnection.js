@@ -41,6 +41,8 @@ class CTIConnection extends WebSocketBaseClient {
             connection: this,
         });
 
+        this.resetQueues = {}
+
         this._loginTimeout = null;
         this.loggedIn = false;
     }
@@ -215,6 +217,11 @@ class CTIConnection extends WebSocketBaseClient {
             } else {
                 utils.showMessage("与服务器的连接已断开!");
             }
+        } else if (data.messageId === MessageID.EventQueued) {
+            this.emit('eventQueued', data)
+        } else if (data.messageId === MessageID.EventResetQueue) {
+            console.log('重置技能组结果', data);
+            this.resetQueues = data
         }
     }
 

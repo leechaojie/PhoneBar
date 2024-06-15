@@ -44,6 +44,7 @@ class PhoneBar extends EventEmitter {
      * @param onTalking  接通事件
      * @param onHangup  挂机事件
      * @param onAgentStatusChange 坐席状态变更事件
+     * @param onQueueUpdate 坐席队列更新事件
      * @param onLinkDisconnected 连接被服务器断开事件
      */
     constructor({
@@ -78,6 +79,7 @@ class PhoneBar extends EventEmitter {
                     onTalking,
                     onHangup,
                     onAgentStatusChange,
+                    onQueueUpdate,
                     onLinkDisconnected
                 }) {
         super();
@@ -144,6 +146,7 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onTalking) && this.on('talking', onTalking);
         utils.isFunction(onHangup) && this.on('hangup', onHangup);
         utils.isFunction(onAgentStatusChange) && this.agent.on('agentStateChange', onAgentStatusChange);
+        utils.isFunction(onQueueUpdate) && this.connection.on('eventQueued', onQueueUpdate);
         utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
 
         this.eventHandler();
@@ -469,6 +472,14 @@ class PhoneBar extends EventEmitter {
         } else {
             this.agentApi.threeWayCall(val.agentId);
         }
+    }
+    
+    /**
+     * 点击排队按钮的事件处理函数
+     */
+    onQueueClick() {
+        const {thisQueues, defaultQueue, queueInfo} = this.connection.resetQueues
+        this.agentApi.setQueueState(thisQueues);
     }
 
     /**

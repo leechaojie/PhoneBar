@@ -13,7 +13,7 @@ class WebSocketBaseClient extends EventEmitter {
         url = 'ws://127.0.0.1:57712', protocols = [],
         username = '',
         token = '',
-
+        agent,
         automaticOpen = true,
         keepAliveInterval = 20000,
 
@@ -24,6 +24,7 @@ class WebSocketBaseClient extends EventEmitter {
         this.username = username;
         this.token = token;
         this.protocols = protocols;
+        this.agent = agent;
 
         /** 实例化后是否自动打开 */
         this.automaticOpen = automaticOpen;
@@ -83,6 +84,19 @@ class WebSocketBaseClient extends EventEmitter {
                     }
                     
                     Log.log(response.body, 'output');
+                });
+
+                // 排队消息订阅
+                this.client.subscribe(`/topic/queue.${this.agent.tid}`, (response) => {
+                    if (response.body === 'ERROR') {
+                        Log.log('排队消息订阅失败');
+                    } else if (response.body === 'SUCCESS') {
+                        // ...
+                        console.log('客户端订阅技能组成功', response.body);
+                    } else {
+                        this.onMessage(response.body);
+                    }
+                    
                 });
                 
             };

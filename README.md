@@ -68,6 +68,10 @@ const initPhoneBar = () => {
       console.log("挂机事件：", callInfo);
     },
 
+    onQueueUpdate: function (queueInfo: IObject) {
+      console.log("坐席队列更新事件", queueInfo);
+    },
+
     onLinkDisconnected: function () {
       console.log("已断开连接");
     }

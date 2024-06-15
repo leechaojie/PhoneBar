@@ -90,6 +90,8 @@ export const MessageID = {
     EventTransferMenuList: 3101,
     EventConferenceMenuList: 3102,
     EventAutoReadyConfig: 3103,
+    // 重置技能组结果
+    EventResetQueue: 3302,
     // 监控
     EventMonitorAgentList:3202,
     // 错误事件

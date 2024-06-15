@@ -111,7 +111,8 @@ class SoftPhoneConnection extends EventEmitter {
     }
 
     onMessage(message) {
-        let token = JSON.parse(message.data);
+        const token = JSON.parse(message.data);
+        if (token === null) return;
         if (token.action === 'ping') {
             this.pingcount = 0;
         } else if (token.action === 'login') {

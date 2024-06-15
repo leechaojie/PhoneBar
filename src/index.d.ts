@@ -136,7 +136,7 @@ declare namespace PhoneBar {
     tid: string;
 
     /**
-     * 分机号
+     * 分机号 与坐席工号一致
      */
     thisDN: string;
 
@@ -146,7 +146,7 @@ declare namespace PhoneBar {
     pstnDN: string | null;
 
     /**
-     * 坐席的工号 与分机号一致
+     * 坐席工号 与分机号一致
      */
     agentID: string;
 
@@ -242,6 +242,12 @@ declare namespace PhoneBar {
      * @param callInfo 通话信息
      */
     onHangup?(callInfo: IObject): void;
+
+    /**
+     * 挂机事件
+     * @param queueInfo 坐席排队信息
+     */
+    onQueueUpdate?(queueInfo: IObject): void;
 
     /**
      * 连接被服务器断开事件

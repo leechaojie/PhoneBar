@@ -812,6 +812,20 @@ class AgentApi {
         };
         this.connection.send(data);
     }
+
+    /**
+     * 获取最新排队信息请求
+     */
+    setQueueState(thisQueues) {
+        const data = {
+            "messageId": MessageID.RequestQueueState,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            "thisQueues": thisQueues,
+        };
+        this.connection.send(data);
+    }
+
 }
 
 export default AgentApi;

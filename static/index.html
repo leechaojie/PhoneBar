@@ -259,6 +259,8 @@
                 onRinging: function (callInfo) { console.log('振铃事件：', callInfo); },
                 onTalking: function (callInfo) { console.log('接通事件：', callInfo); },
                 onHangup: function (callInfo) { console.log('挂机事件：', callInfo); },
+                onResetQueues: function (queueInfo) { console.log('重置技能组结果', queueInfo) },
+                onQueueUpdate: function (queueInfo) { console.log('排队事件：', queueInfo); },
                 onLinkDisconnected: function () { location.href = 'login.html' },
             });
         }
@@ -327,7 +329,6 @@
             if (oTextareaInfo != null)
                 oTextareaInfo.innerHTML = "";
         }
-
 
         var showMessage = PhoneBar.utils.showMessage = function (msg) {
             //layer.alert(msg, {icon: 7});

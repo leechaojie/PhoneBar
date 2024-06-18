@@ -68,6 +68,10 @@ const initPhoneBar = () => {
       console.log("挂机事件：", callInfo);
     },
 
+    onResetQueues: function (groupInfo: IObject) {
+      console.log("重置技能组结果事件", groupInfo);
+    },
+
     onQueueUpdate: function (queueInfo: IObject) {
       console.log("坐席队列更新事件", queueInfo);
     },

@@ -220,8 +220,9 @@ class CTIConnection extends WebSocketBaseClient {
         } else if (data.messageId === MessageID.EventQueued) {
             this.emit('eventQueued', data)
         } else if (data.messageId === MessageID.EventResetQueue) {
-            console.log('重置技能组结果', data);
+            // 重置技能组结果
             this.resetQueues = data
+            this.emit('resetQueues', data)
         }
     }
 

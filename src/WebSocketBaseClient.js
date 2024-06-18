@@ -91,8 +91,7 @@ class WebSocketBaseClient extends EventEmitter {
                     if (response.body === 'ERROR') {
                         Log.log('排队消息订阅失败');
                     } else if (response.body === 'SUCCESS') {
-                        // ...
-                        console.log('客户端订阅技能组成功', response.body);
+                        Log.log('排队消息订阅成功');
                     } else {
                         this.onMessage(response.body);
                     }

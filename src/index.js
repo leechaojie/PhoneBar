@@ -45,6 +45,7 @@ class PhoneBar extends EventEmitter {
      * @param onHangup  挂机事件
      * @param onAgentStatusChange 坐席状态变更事件
      * @param onQueueUpdate 坐席队列更新事件
+     * @param onResetQueues 重置技能组结果事件
      * @param onLinkDisconnected 连接被服务器断开事件
      */
     constructor({
@@ -79,6 +80,7 @@ class PhoneBar extends EventEmitter {
                     onTalking,
                     onHangup,
                     onAgentStatusChange,
+                    onResetQueues,
                     onQueueUpdate,
                     onLinkDisconnected
                 }) {
@@ -147,6 +149,7 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onHangup) && this.on('hangup', onHangup);
         utils.isFunction(onAgentStatusChange) && this.agent.on('agentStateChange', onAgentStatusChange);
         utils.isFunction(onQueueUpdate) && this.connection.on('eventQueued', onQueueUpdate);
+        utils.isFunction(onResetQueues) && this.connection.on('resetQueues', onResetQueues);
         utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
 
         this.eventHandler();
@@ -396,6 +399,22 @@ class PhoneBar extends EventEmitter {
     }
 
     /**
+     * 接听呼叫
+     */
+    answerCall() {
+        this.agentApi.answerCall();
+    }
+
+    /**
+     * 接听排队中呼叫
+     * @param {String} callId 主叫id
+     * @param {String} thisQueue 所在技能组
+     */
+    answerCallByQueue(callId, thisQueue) {
+        this.agentApi.answerCallByQueue(callId, thisQueue);
+    }
+
+    /**
      * 更新转移下拉菜单选项
      */
     updateTransferMenu(data) {
@@ -475,11 +494,13 @@ class PhoneBar extends EventEmitter {
     }
     
     /**
-     * 点击排队按钮的事件处理函数
+     * 更新坐席排队信息
+     * @public
+     * 可以在点击排队列表时更新
      */
-    onQueueClick() {
+    updateQueueInfo() {
         const {thisQueues, defaultQueue, queueInfo} = this.connection.resetQueues
-        this.agentApi.setQueueState(thisQueues);
+        this.agentApi.sendQueueInfoRequest(thisQueues);
     }
 
     /**
@@ -547,11 +568,11 @@ class PhoneBar extends EventEmitter {
      * @private
      */
     _showDialPad({
-                     title = '拨号',
-                     contacts = [],
-                     btnName,
-                     onDynamicButtonClick = function () {}
-                 }) {
+        title = '拨号',
+        contacts = [],
+        btnName,
+        onDynamicButtonClick = function () { }
+    }) {
         // 当存在则先关闭此对话框
         if (this.dialPad) {
             this.dialPad.destroy();

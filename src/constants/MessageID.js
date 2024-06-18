@@ -10,6 +10,7 @@ export const MessageID = {
     // 电话控制指令
     RequestMakeCall: 200,
     RequestAnswerCall: 201,
+    RequestBridgeCall: 202, // 排队中接听
     RequestReleaseCall: 203,
     RequestHoldCall: 204,
     RequestRedirectCall: 212,

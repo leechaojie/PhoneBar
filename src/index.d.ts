@@ -4,6 +4,79 @@ interface IObject<T = any> {
   [key: string]: T;
 }
 
+/**
+ * 按钮名称类型
+ */
+type ComponentName =
+  /**
+   * 打开拨号盘
+   */
+  | 'openDialPad'
+  /**
+   * 接听
+   */
+  | 'answer'
+  /**
+   * 挂断
+   */
+  | 'hangup'
+  /**
+   * 保持
+   */
+  | 'hold'
+  /**
+   * 接回
+   */
+  | 'retrieve'
+  /**
+   * 转接
+   */
+  | 'transfer'
+  /**
+   * 转出
+   */
+  | 'rollout'
+  /**
+   * 会议
+   */
+  | 'conference';
+
+/**
+ * 按钮实例
+ */
+declare class PhoneBarButton {
+  
+  /**
+   * id
+   */
+  readonly id: string;
+
+  /**
+   * 状态
+   */
+  readonly rootNode: HTMLLIElement;
+
+  /**
+   * 隐藏按钮
+   */
+  hide(): void;
+
+  /**
+   * 显示按钮
+   */
+  show(): void;
+
+  /**
+   * 启用按钮
+   */
+  enable(): void;
+
+  /**
+   * 禁用按钮
+   */
+  disable(): void;
+}
+
 declare class PhoneBar {
   constructor(options: PhoneBar.Options);  
   
@@ -11,6 +84,38 @@ declare class PhoneBar {
    * 属性配置
    */
   readonly options: PhoneBar.Options; 
+
+  /**
+   * 根据名称获取组件
+   * @param {ComponentName} componentName 按钮名称
+   */
+  getComponent(componentName: ComponentName): PhoneBarButton | null;
+
+  /**
+   * 主动拨打呼叫
+   * @param {String} number
+   */
+  makeCall(number: string): void;
+
+  /**
+   * 接听呼叫
+   */
+  answerCall(): void;
+
+  /**
+   * 接听排队中呼叫
+   * @param {String} callId 主叫id
+   * @param {String} thisQueue 所在技能组
+   */
+  answerCallByQueue(callId: string, thisQueue: string): void;
+
+  
+  /**
+   * 更新坐席排队信息
+   * @public
+   * 可以在点击排队列表时更新
+   */
+  updateQueueInfo(): void;
 
   /**
    * 销毁组件
@@ -244,7 +349,13 @@ declare namespace PhoneBar {
     onHangup?(callInfo: IObject): void;
 
     /**
-     * 挂机事件
+     * 重置技能组结果事件
+     * @param groupInfo 技能组信息
+     */
+    onResetQueues?(groupInfo: IObject): void;
+
+    /**
+     * 坐席排队信息更新事件
      * @param queueInfo 坐席排队信息
      */
     onQueueUpdate?(queueInfo: IObject): void;

@@ -157,12 +157,12 @@ class AgentApi {
      * 接听电话
      */
     answerCall() {
-        let line = this.linePool.getCurrentLine();
+        const line = this.linePool.getCurrentLine();
         if (line.lineState !== LineState.RINGING && line.lineState !== LineState.DIALING) {
             utils.showMessage("没有可接听的电话！");
             return false;
         } else {
-            let data = {
+            const data = {
                 "messageId": 201,
                 "thisDN": this.agent.thisDN,
                 "agentID": this.agent.agentID,
@@ -170,6 +170,26 @@ class AgentApi {
             };
             this.connection.send(data);
         }
+    }
+
+    /**
+     * 接听排队中呼叫
+     * @param callId
+     * @param {String} thisQueue 所在技能组
+     */
+    answerCallByQueue(callId, thisQueue) {
+        if (!callId) {
+            utils.showMessage("callId不能为空");
+            return false;
+        }
+        const data = {
+            "messageId": 202,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            "callID": callId,
+            "queueCode": thisQueue,
+        };
+        this.connection.send(data);
     }
 
     /**
@@ -814,14 +834,14 @@ class AgentApi {
     }
 
     /**
-     * 获取最新排队信息请求
+     * 发送最新排队信息请求
      */
-    setQueueState(thisQueues) {
+    sendQueueInfoRequest(queues) {
         const data = {
             "messageId": MessageID.RequestQueueState,
             "thisDN": this.agent.thisDN,
             "agentID": this.agent.agentID,
-            "thisQueues": thisQueues,
+            "queues": queues,
         };
         this.connection.send(data);
     }

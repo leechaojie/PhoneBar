@@ -214,7 +214,7 @@
 .phonebar-nav .multilevelMenu>ul {
     position: absolute;
     left: 0;
-    top: 100%;
+    /* top: 100%; */
 }
 
 .phonebar-nav .multilevelMenu ul {
@@ -229,9 +229,21 @@
     position: relative;
 }
 
-.phonebar-nav .multilevelMenu ul>li ul {
+.phonebar-nav .multilevelMenu ul > li ul {
     position: absolute;
     top: 0;
+    /* right: -120px; */
+    left: 120px;
+    width: max-content;
+}
+
+.phonebar-nav .multilevelMenu > ul > li > ul > li > ul {
+    width: auto;
+    max-height: 490px;
+    overflow-y: auto;
+    overflow-x: clip;
+    padding: 3px 0;
+    left: unset;
     right: -120px;
 }
 
@@ -247,21 +259,28 @@
     border-top: 1px solid #e7eaec
 }
 
+.phonebar-nav .multilevelMenu li h3::after {
+    content: '';
+    margin-right: 10px;
+}
+
 .phonebar-nav .multilevelMenu li h3 i {
     float: right;
     height: 30px;
     line-height: 30px;
 }
 
-.phonebar-nav .multilevelMenu>ul>li h3 {
+.phonebar-nav .multilevelMenu > ul > li h3 {
     background: #fff;
 }
+
 .phonebar-nav .multilevelMenu li h3:hover {
     background: #f5f5f5;
     border-left: 2px solid #7189e3;
     color: #7189e3
 }
-.phonebar-nav .multilevelMenu>ul>li h3 span.list{
+
+.phonebar-nav .multilevelMenu > ul > li h3 span.list{
     float: right;
     margin-top:11px;
     border-left: 4px solid;
@@ -271,7 +290,6 @@
     width: 0;
     line-height: normal;
 }
-
 
 /* 会议多方会话 */
 .threewayCallBox {

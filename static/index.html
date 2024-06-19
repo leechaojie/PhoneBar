@@ -232,6 +232,15 @@
             }
 
             var thisQueues = $('#thisQueues').val() ? $('#thisQueues').val().split(',') : [];
+            var tid = $("#corpVccIdTxt").val();
+            var agentId = '';
+            if (tid.length === 5) {
+                agentId = tid + $("#agentIdTxt").val();
+            } else if (tid.length === 6) {
+                agentId = "000002" + tid + "08" + $("#agentIdTxt").val();
+            } else {
+                agentId = $("#agentIdTxt").val()
+            }
 
             phoneBar = new PhoneBar({
                 renderTo: 'test1',
@@ -242,8 +251,8 @@
                 username: $("#ctiUsername").val(),
                 token: $("#ctiToken").val(),
                 tid: $("#corpVccIdTxt").val(),
-                thisDN: $("#agentIdTxt").val(),
-                agentID: $("#agentIdTxt").val(),
+                thisDN: agentId,
+                agentID: agentId,
                 password: $("#password").val(),
                 loginType: parseInt($('#loginType').val()),
                 thisQueues: thisQueues,
@@ -261,6 +270,7 @@
                 onHangup: function (callInfo) { console.log('挂机事件：', callInfo); },
                 onResetQueues: function (queueInfo) { console.log('重置技能组结果', queueInfo) },
                 onQueueUpdate: function (queueInfo) { console.log('排队事件：', queueInfo); },
+                onUserInputCompleted: function(data) {console.log('用户输入完成事件：', data);showMessage(data.digits)},
                 onLinkDisconnected: function () { location.href = 'login.html' },
             });
         }

@@ -80,9 +80,10 @@ class PhoneBar extends EventEmitter {
                     onTalking,
                     onHangup,
                     onAgentStatusChange,
+                    onLinkDisconnected,
+                    onUserInputCompleted,
                     onResetQueues,
                     onQueueUpdate,
-                    onLinkDisconnected
                 }) {
         super();
         const options = this.options = arguments[0];
@@ -148,9 +149,10 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onTalking) && this.on('talking', onTalking);
         utils.isFunction(onHangup) && this.on('hangup', onHangup);
         utils.isFunction(onAgentStatusChange) && this.agent.on('agentStateChange', onAgentStatusChange);
+        utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
+        utils.isFunction(onUserInputCompleted) && this.connection.on('userInputCompleted', onUserInputCompleted);
         utils.isFunction(onQueueUpdate) && this.connection.on('eventQueued', onQueueUpdate);
         utils.isFunction(onResetQueues) && this.connection.on('resetQueues', onResetQueues);
-        utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
 
         this.eventHandler();
         this.initial();
@@ -329,7 +331,7 @@ class PhoneBar extends EventEmitter {
 
     initial() {
         // 是否自动拉起软电话
-        if (this.options.startupSoftPhone === true) {
+        if (this.options.startupSoftPhone === true && !this.options.isPhoneTakeAlong) {
             // 与软电话建立连接
             this.softPhoneConnection.open();
             // 软电话登录成功后登录电话条
@@ -393,8 +395,14 @@ class PhoneBar extends EventEmitter {
      */
     makeCall(phoneNumber) {
         phoneNumber = phoneNumber || this.dialPad.getPhoneNumber();
-        if (phoneNumber.length === 4 && this.agent.tid !== '0') phoneNumber = this.agent.tid + phoneNumber;
-        let type = (phoneNumber.length === 9 && phoneNumber.charAt(0) === '1') ? 1 : 3;
+        if (phoneNumber.length == 4 && this.agent.tid !== '0') {
+            if(this.agent.tid.length==5){
+                phoneNumber=this.agent.tid+phoneNumber;
+            } else {
+                phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
+            }
+        }
+        let type = /(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3;
         this.agentApi.makeCall(phoneNumber, -1, type, null, null, this.agent.defaultQueue);
     }
 
@@ -445,8 +453,14 @@ class PhoneBar extends EventEmitter {
         } else if (val.type === "doublestep") {
             // 两步转接
             this.agentApi.consult(val.agentId);
+        } else if (val.type === "btnCollect") {
+            // 按键采集
+            this.agentApi.digitCollections(val.ivrId);
+        } else if (val.type === "btnSatisfaction") {
+            // 转满意度
+            this.agentApi.singleStepTransfer(`icp_${val.ivrId}`);
         } else if (val.ivrId) {
-            // 按键采集/转IVR
+            // 转IVR
             this.agentApi.singleStepTransfer(`ivr_${val.ivrId}`);
         } else if (val.type === "singlestep") {
             // 单步转接

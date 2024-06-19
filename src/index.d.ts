@@ -361,6 +361,12 @@ declare namespace PhoneBar {
     onQueueUpdate?(queueInfo: IObject): void;
 
     /**
+     * 用户输入完成事件
+     * @param callInfo 通话信息
+     */
+    onUserInputCompleted?(data: IObject): void;
+
+    /**
      * 连接被服务器断开事件
      * @param callInfo 通话信息
      */

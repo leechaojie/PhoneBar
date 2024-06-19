@@ -95,6 +95,16 @@ export const MessageID = {
     EventResetQueue: 3302,
     // 监控
     EventMonitorAgentList:3202,
+    RequestCrmQueueMonitorInfo:3203,
+    CrmQueueMonitorAttr:3204,
+    RequestStartQueueMonitoring:268,
+    RequestStopQueueMonitoring:269,
+    EventQueueStatisticA:540,
+    EventQueueStatisticB:541,
+    EventQueuedCustomerIn:542,
+    EventQueuedCustomerOut:543,
+    RequestJumpTheQueue:302,
+
     // 错误事件
     EventError: 9999,
 };

@@ -127,6 +127,7 @@ class PhoneBar extends EventEmitter {
         this.getComponent('retrieve').on('click', () => {
             this.agentApi.retrieveCall();
         });
+        this.getComponent('transfer').on('transferClick', this.onTransferClick.bind(this));
         this.getComponent('transfer').on('itemClick', this.onTransferItemClick.bind(this));
         this.getComponent('rollout').on('click', () => {
             this.agentApi.completeTransfer();
@@ -167,6 +168,10 @@ class PhoneBar extends EventEmitter {
         // 转接菜单列表事件
         this.connection.on(MessageID.EventTransferMenuList.toString(), (data) => {
             this.updateTransferMenu(data.menuList);
+        });
+        // 转接菜单列表更新事件
+        this.connection.on(MessageID.EventUpdateConferenceMenuList.toString(), (data) => {
+            this.mergeTransferMenu(data.menuList);
         });
         // 转接菜单列表事件
         this.connection.on(MessageID.EventConferenceMenuList.toString(), (data) => {
@@ -444,6 +449,33 @@ class PhoneBar extends EventEmitter {
             }
         });
         transferComponent.updateMenuData(data);
+    }
+
+    /**
+     * 合并覆盖转移下拉菜单选项
+     */
+    mergeTransferMenu(data) {
+        const transferComponent = this.getComponent('transfer');
+        // 如果转外线号码清空子选项
+        data && data.forEach(val => {
+            if (val.type === 'transferOutLine') {
+                val['contacts'] = val.menu;
+                val.menu = [];
+            }
+        });
+        transferComponent.mergeMenuData(data);
+    }
+
+    /**
+     * 点击转移菜单获取最新坐席列表数据
+     */
+    onTransferClick() {
+        const data = {
+            "messageId": 3104,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID
+        };
+        this.connection.send(data)
     }
 
     /**

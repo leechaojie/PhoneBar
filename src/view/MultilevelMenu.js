@@ -13,6 +13,7 @@ class MultilevelMenu extends PhoneBarButton {
                     visible = true,
                     enabled = false,
                     menuData,
+                    onTransferClick,
                     onItemClick
                 }) {
         super({
@@ -27,6 +28,7 @@ class MultilevelMenu extends PhoneBarButton {
         document.addEventListener('click', this.onBodyClick = this._hideMenu.bind(this));
         this.rootNode.onmouseleave = () => {this._hideMenu()};
 
+        utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
         utils.isFunction(onItemClick) && this.on('itemClick', onItemClick);
 
         this.rootNode.appendChild(this.generateMenu());
@@ -76,6 +78,20 @@ class MultilevelMenu extends PhoneBarButton {
         this.rootNode.appendChild(this.generateMenu());
     }
 
+    mergeMenuData(menuData) {
+        menuData.forEach(item => {
+            const index = this.menuData.findIndex(menu => menu.name === item.name);
+            if (index > -1) {
+                this.menuData[index] = item;
+            } else {
+                this.menuData.push(item);
+            }
+        })
+        this.updateMenuData(this.menuData);
+
+        this.emit('menuDataMerged');
+    }
+
     _hideMenu() {
         let _visible = this.menuNode.style.display !== "none";
         if (_visible) {
@@ -90,12 +106,14 @@ class MultilevelMenu extends PhoneBarButton {
         if (_visible) {
             this._hideMenu();
         } else {
-            this.menuNode.style.display = 'block';
-            this.rootNode.classList.add(this._openClassName);
+            this.emit('transferClick');
+            this.on('menuDataMerged', () => {
+                this.menuNode.style.display = 'block';
+                this.rootNode.classList.add(this._openClassName);
+            });
         }
         e.stopPropagation();
     }
-
 
     destroy() {
         super.destroy();

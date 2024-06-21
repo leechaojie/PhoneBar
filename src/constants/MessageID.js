@@ -38,7 +38,6 @@ export const MessageID = {
     RequestMonitorAgentList:3201,
     RequestAutoReadyConfig:3601,
 
-
     // 响应事件
     EventWelcome: 2,
     EventPong: 3,
@@ -90,6 +89,8 @@ export const MessageID = {
     EventTransferMenuList: 3101,
     EventConferenceMenuList: 3102,
     EventAutoReadyConfig: 3103,
+    RequestConferenceMenuList: 3104,
+    EventUpdateConferenceMenuList: 3105,
     // 监控
     EventMonitorAgentList:3202,
     RequestCrmQueueMonitorInfo:3203,

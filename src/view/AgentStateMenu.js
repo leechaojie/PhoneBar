@@ -25,13 +25,24 @@ class AgentStateMenu extends EventEmitter {
         /*
         * 所有可操作动作
         * */
-        this.actionList = [
-            {'name': '就绪', 'value': 'ready', 'visible': true},
-            {'name': '示忙', 'value': 'busy', 'visible': true},
-            {'name': '休息', 'value': 'rest', 'visible': true},
-            {'name': '离线', 'value': 'logout', 'visible': false},
-            {'name': '登入', 'value': 'login', 'visible': true}
-        ];
+        this.actionList = [];
+        const predefinedMenu = [
+            { name: '离线', value: 'logout', visible: false, color: '#f8ac59' },
+            { name: '登入', value: 'login', visible: true, color: '#f8ac59' }
+        ]
+        // 组装下拉菜单
+        for (const stateKey in Agent.stateDict) {
+            if (Agent.allowModifyStates.includes(stateKey)) {
+                const item = {
+                    name: Agent.stateDict[stateKey].name,
+                    value: stateKey,
+                    visible: true,
+                    color: Agent.stateDict[stateKey].color ? Agent.stateDict[stateKey].color : ''
+                }
+                this.actionList.push(item);
+            }
+        }
+        this.actionList.push(...predefinedMenu);
 
         this._visible = visible;
         this._enabled = enabled;
@@ -86,7 +97,8 @@ class AgentStateMenu extends EventEmitter {
 
         this._actionElementMap = {};
         this.actionList.forEach((action) => {
-            let menu = document.createElement('li');
+            const menu = document.createElement('li');
+            menu.id = action.value
             // 默认是否显示
             if (!action.visible) {
                 menu.style.display = 'none';
@@ -96,6 +108,9 @@ class AgentStateMenu extends EventEmitter {
 
             let icon = document.createElement('i');
             icon.className = action.value;
+            if (action.color) {
+                icon.style.background = action.color;
+            }
             let textSpan = document.createElement('span');
             textSpan.innerText = action.name;
 
@@ -134,7 +149,15 @@ class AgentStateMenu extends EventEmitter {
 
     changeAgentState(state) {
         this._selectedState = state;
-        this.agentStateIcon.className = `agentstate-${state}`;
+        
+        // 自定义状态设置为 rest
+        const customState = ['reason1', 'reason2', 'reason3', 'reason4', 'reason5', 'reason7'];
+        if (customState.includes(state)) {
+            this.agentStateIcon.className = `agentstate-rest`;
+        } else {
+            this.agentStateIcon.className = `agentstate-${state}`;
+        }
+
         this.agentStateText.innerText = Agent.getStateName(state);
 
         // 当点击离线时隐藏离线选项，显示登入选项
@@ -146,6 +169,42 @@ class AgentStateMenu extends EventEmitter {
             this._actionElementMap['login'].style.display = 'none';
             this._actionElementMap['logout'].style.display = 'block';
         }
+    }
+
+    /**
+    * 合并更新远程状态列表
+    * @param {Array} newData 新状态数据
+    */
+    mergeRemoteActionList(newData) {
+        const remoteActionList = [];
+        newData.forEach(item => {
+            const action = {
+                name: item.name,
+                value: item.key,
+                visible: true,
+                color: item.color
+            }
+            remoteActionList.push(action);
+        });
+
+        remoteActionList.forEach(action => {
+            const list = this.actionList.find(item => item.value === action.value);
+            if (list) {
+                list.name = action.name;
+                list.visible = action.visible;
+                list.color = action.color;
+            } else {
+                this.actionList.splice(-2, 0, action);
+            }
+        });
+
+        // 如果已经创建了 DOM，则需要重新生成下拉菜单
+        if (this.rootNode) {
+            this.rootNode.removeChild(this._dropdownMenuNode);
+            this.rootNode.appendChild(this._generateDropdownMenuNode());
+        }
+
+        Agent.setRemoteCustomReason(newData);
     }
 
     destroy() {

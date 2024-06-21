@@ -19,10 +19,11 @@ class PhoneBarComponent extends EventEmitter {
 
         this.id = `phoneBar-${autoIncrementId++}`;
         this._rootNodeClassName = 'phonebar-nav clearfloat';
+        this.agentStateMenu = new AgentStateMenu()
 
         this.buttonList = [
             {
-                'name': 'agentState', 'component': new AgentStateMenu(), 'sort': '1'
+                'name': 'agentState', 'component': this.agentStateMenu, 'sort': '1'
             },
             {
                 'name': 'openDialPad', 'component': new PhoneBarButton({
@@ -314,6 +315,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").enable();
     }
 
+    mergeRemoteActionList(newData) {
+        this.agentStateMenu.mergeRemoteActionList(newData);
+    }
 
     destroy() {
         if (this.rootNode && this.rootNode.parentNode) {

@@ -38,7 +38,8 @@ class PhoneBar extends EventEmitter {
      * @param autoIdleWhenLogin  登录后自动置闲
      * @param isPhoneTakeAlong  是否手机随行，即手机在线，默认为false
      * @param workPhone  随行手机号
-     * @param autoAnswer  自动应答
+     * @param autoAnswer  自动应答     
+     * @param customNotReadyReason  自定义坐席状态
      * @param onScreenPopup 弹屏事件
      * @param onRinging  呼入振铃事件
      * @param onTalking  接通事件
@@ -75,6 +76,8 @@ class PhoneBar extends EventEmitter {
                     workPhone = '',
                     autoAnswer = false,
 
+                    customNotReadyReason = [],
+
                     onScreenPopup,
                     onRinging,
                     onTalking,
@@ -87,6 +90,7 @@ class PhoneBar extends EventEmitter {
                 }) {
         super();
         const options = this.options = arguments[0];
+        options.customNotReadyReason = customNotReadyReason;
 
         // 初始化线路信息
         this.linePool = new LinePool();
@@ -94,6 +98,8 @@ class PhoneBar extends EventEmitter {
         this.agentConfig = new AgentConfig(options);
         // 初始化坐席数据
         this.agent = new Agent(options);
+        // 初始化坐席自定义状态
+        Agent.setCustomNotReadyReason(options.customNotReadyReason);
 
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
@@ -200,6 +206,39 @@ class PhoneBar extends EventEmitter {
             } else {
                 this.agentConfig.maxAfterWorkTime = 0;
             }
+
+            const agentStateExtList = data.agentStateExtList
+            if (agentStateExtList && agentStateExtList.length > 0) {
+                console.log("自定义坐席状态", agentStateExtList);
+                // this.emit('mergeRemoteActionList', agentStateExtList);
+                // const data = [
+                //     {
+                //         "reasonCode": -1,
+                //         "key": "ready",
+                //         "name": "就就",
+                //         "color": "#E80E0E"
+                //     },
+                //     {
+                //         "reasonCode": 11,
+                //         "key": "reason1",
+                //         "name": "测试状态1",
+                //         "color": "#E80E0E"
+                //     },
+                //     {
+                //         "reasonCode": 3,
+                //         "key": "busy",
+                //         "name": "1示忙",
+                //         "color": "#775837"
+                //     },
+                //     {
+                //         "reasonCode": 5,
+                //         "key": "rest",
+                //         "name": "2休息",
+                //         "color": "#382EE4"
+                //     }
+                // ]
+                this.phoneBarComponent.mergeRemoteActionList(agentStateExtList);
+            }
         });
 
         // 监听座席状态定时器
@@ -233,7 +272,7 @@ class PhoneBar extends EventEmitter {
             if(this.agent.deviceState === DeviceState.REGISTERED) {
                 if (state === Agent.READY) {
                     this.phoneBarComponent.changeButtonWhenReady();
-                } else if (state === Agent.BUSY || state === Agent.RESTING || state === Agent.NEATENING) {
+                } else if (state === Agent.BUSY || state === Agent.REST || state === Agent.NEATENING) {
                     this.phoneBarComponent.changeButtonWhenNotReady();
                 } else if (state === Agent.OFFLINE) {
                     this.phoneBarComponent.changeButtonWhenLogout();
@@ -375,17 +414,51 @@ class PhoneBar extends EventEmitter {
             utils.showMessage('正在通话，禁止切换状态');
             return false;
         }
+        switch (action) {
+            case 'ready':
+                this.agentApi.agentReady(true);
+                break;
 
-        if (action === 'ready') {
-            this.agentApi.agentReady(true);
-        } else if (action === 'login') {
-            this.agentApi.agentLogin();
-        } else if (action === 'logout') {
-            this.agentApi.agentLogout();
-        } else if (action === 'busy') {
-            this.agentApi.agentNotReady(3);
-        } else if (action === 'rest') {
-            this.agentApi.agentNotReady(5);
+            case 'login':
+                this.agentApi.agentLogin();
+                break;
+
+            case 'logout':
+                this.agentApi.agentLogout();
+                break;
+
+            case 'busy':
+                this.agentApi.agentNotReady(3);
+                break;
+
+            case 'rest':
+                this.agentApi.agentNotReady(5);
+                break;
+
+            case 'reason1':
+                this.agentApi.agentNotReady(11);
+                break;
+
+            case 'reason2':
+                this.agentApi.agentNotReady(12);
+                break;
+
+            case 'reason3':
+                this.agentApi.agentNotReady(13);
+                break;
+
+            case 'reason4':
+                this.agentApi.agentNotReady(14);
+                break;
+
+            case 'reason5':
+                this.agentApi.agentNotReady(15);
+                break;
+
+            case 'reason7':
+                this.agentApi.agentNotReady(17);
+                break;
+
         }
 
     }

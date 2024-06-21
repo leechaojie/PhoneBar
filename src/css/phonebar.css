@@ -156,7 +156,7 @@
 .phonebar-nav .call>span.agentstate-busy {
     background-position: -28px 0;
 }
-.phonebar-nav .call>span.agentstate-resting {
+.phonebar-nav .call>span.agentstate-rest {
     background-position: -56px 0;
 }
 .phonebar-nav .call>span.agentstate-offline {
@@ -204,6 +204,25 @@
 .phonebar-nav .dropdown-menu i.login, i.logout {
     background: #f8ac59;
 }
+.phonebar-nav .dropdown-menu i.reason1 {
+    background: #795548;
+}
+.phonebar-nav .dropdown-menu i.reason2 {
+    background: #5c6bc0;
+}
+.phonebar-nav .dropdown-menu i.reason3 {
+    background: #66bb6a;
+}
+.phonebar-nav .dropdown-menu i.reason4 {
+    background: #26c6da;
+}
+.phonebar-nav .dropdown-menu i.reason5 {
+    background: #8bc34a;
+}
+.phonebar-nav .dropdown-menu i.reason7 {
+    background: #c83bbc;
+}
+
 
 
 /* 多级菜单 */

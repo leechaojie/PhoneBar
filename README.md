@@ -27,7 +27,7 @@ import { ElMessageBox } from "element-plus";
 import { WarningFilled } from "@element-plus/icons-vue";
 import PhoneBar from "hlytx-phone-bar";
 
-let phoneBar: any = null;
+let phoneBar: PhoneBar | null = null;
 
 const initPhoneBar = () => {
   phoneBar = new PhoneBar({
@@ -47,6 +47,18 @@ const initPhoneBar = () => {
     autoIdleWhenAfterWork: true,
     autoIdleWhenLogin: false,
     isPhoneTakeAlong: false,
+
+    // 还可以自定义坐席状态名称以及颜色
+    customNotReadyReason: [
+        {code: 3, name:'示忙3', color: 'pink'},
+        {code: 5, name:'休息5', color: 'pink'},
+        {code: 11, name:'自1', color: 'pink'},
+        {code: 12, name:'自2', color: 'pink'},
+        {code: 13, name:'自3', color: 'pink'},
+        {code: 14, name:'自4', color: 'pink'},
+        {code: 15, name:'自5', color: 'pink'},
+        {code: 17, name:'自7', color: 'pink'},
+    ],
 
     onAgentStatusChange: function (newState: string, beforeValue: string) {
       console.log("坐席状态由[" + beforeValue + "]变更为[" + newState + "]");

@@ -5,26 +5,31 @@
 .phonebar-nav a,
 .phonebar-nav div,
 .phonebar-nav span,
-.phonebar-nav i{
-    box-sizing:border-box
+.phonebar-nav i {
+    box-sizing: border-box
 }
+
 .phonebar-nav {
     width: auto;
     height: auto;
     margin: 0;
     padding: 0;
 }
+
 .phonebar-nav ul {
     margin: 0;
     padding: 0
 }
+
 .phonebar-nav>li {
     position: relative;
     display: block
 }
+
 .phonebar-nav li {
     list-style: none;
 }
+
 .phonebar-nav a {
     display: block;
     text-decoration: none
@@ -36,13 +41,16 @@
     float: left;
     position: relative
 }
+
 .phonebar-nav .operation span {
     user-select: none;
 }
+
 .phonebar-nav .operation:hover {
     background: rgba(225, 225, 225, 0.3);
     transition: all .3s ease
 }
+
 .phonebar-nav .operation.open {
     font-size: 12px;
     background: rgba(225, 225, 225, 0.3);
@@ -62,6 +70,7 @@
 .phonebar-nav .operation .opendialpad {
     background-position: 0 0
 }
+
 .phonebar-nav .operation.disabled .opendialpad {
     background-position: -0 -20px
 }
@@ -70,6 +79,7 @@
 .phonebar-nav .operation .answer {
     background-position: -20px 0
 }
+
 .phonebar-nav .operation.disabled .answer {
     background-position: -20px -20px
 }
@@ -78,6 +88,7 @@
 .phonebar-nav .operation .hangup {
     background-position: -40px 0
 }
+
 .phonebar-nav .operation.disabled .hangup {
     background-position: -40px -20px
 }
@@ -86,6 +97,7 @@
 .phonebar-nav .operation .hold {
     background-position: -60px 0
 }
+
 .phonebar-nav .operation.disabled .hold {
     background-position: -60px -20px
 }
@@ -94,6 +106,7 @@
 .phonebar-nav .operation .retrieve {
     background-position: -80px 0
 }
+
 .phonebar-nav .operation.disabled .retrieve {
     background-position: -80px -20px
 }
@@ -102,6 +115,7 @@
 .phonebar-nav .operation .transfer {
     background-position: -100px 0
 }
+
 .phonebar-nav .operation.disabled .transfer {
     background-position: -100px -20px
 }
@@ -110,6 +124,7 @@
 .phonebar-nav .operation .rollout {
     background-position: -120px 0
 }
+
 .phonebar-nav .operation.disabled .rollout {
     background-position: -120px -20px
 }
@@ -118,6 +133,7 @@
 .phonebar-nav .operation .conference {
     background-position: -140px 0
 }
+
 .phonebar-nav .operation.disabled .conference {
     background-position: -140px -20px
 }
@@ -141,6 +157,7 @@
 .phonebar-nav .call {
     padding: 7px 8px 5px 0 !important;
 }
+
 .phonebar-nav .call>span {
     background: url('../assets/images/call_state.png');
     display: block;
@@ -150,27 +167,35 @@
     margin-top: 3px;
     float: left;
 }
+
 .phonebar-nav .call>span.agentstate-ready {
     background-position: 0 0;
 }
+
 .phonebar-nav .call>span.agentstate-busy {
     background-position: -28px 0;
 }
+
 .phonebar-nav .call>span.agentstate-rest {
     background-position: -56px 0;
 }
+
 .phonebar-nav .call>span.agentstate-offline {
     background-position: -84px 0;
 }
+
 .phonebar-nav .call>span.agentstate-ringing {
     background-position: -112px 0;
 }
+
 .phonebar-nav .call>span.agentstate-talking {
     background-position: -140px 0;
 }
+
 .phonebar-nav .call>span.agentstate-neatening {
     background-position: -168px 0;
 }
+
 .phonebar-nav .call>.operation_text {
     width: auto;
     height: 33px;
@@ -181,6 +206,7 @@
     color: #fff;
     float: left;
 }
+
 .phonebar-nav .call>.operation_text span {
     display: block
 }
@@ -192,33 +218,44 @@
     border-radius: 50%;
     margin-right: 5px;
 }
+
 .phonebar-nav .dropdown-menu i.ready {
     background: #1ab394;
 }
+
 .phonebar-nav .dropdown-menu i.busy {
     background: #1c84c6;
 }
+
 .phonebar-nav .dropdown-menu i.rest {
     background: #23c6c8;
 }
-.phonebar-nav .dropdown-menu i.login, i.logout {
+
+.phonebar-nav .dropdown-menu i.login,
+i.logout {
     background: #f8ac59;
 }
+
 .phonebar-nav .dropdown-menu i.reason1 {
     background: #795548;
 }
+
 .phonebar-nav .dropdown-menu i.reason2 {
     background: #5c6bc0;
 }
+
 .phonebar-nav .dropdown-menu i.reason3 {
     background: #66bb6a;
 }
+
 .phonebar-nav .dropdown-menu i.reason4 {
     background: #26c6da;
 }
+
 .phonebar-nav .dropdown-menu i.reason5 {
     background: #8bc34a;
 }
+
 .phonebar-nav .dropdown-menu i.reason7 {
     background: #c83bbc;
 }
@@ -248,7 +285,7 @@
     position: relative;
 }
 
-.phonebar-nav .multilevelMenu ul > li ul {
+.phonebar-nav .multilevelMenu ul>li ul {
     position: absolute;
     top: 0;
     /* right: -120px; */
@@ -256,7 +293,7 @@
     width: max-content;
 }
 
-.phonebar-nav .multilevelMenu > ul > li > ul > li > ul {
+.phonebar-nav .multilevelMenu>ul>li>ul>li>ul {
     width: auto;
     max-height: 490px;
     overflow-y: auto;
@@ -289,7 +326,7 @@
     line-height: 30px;
 }
 
-.phonebar-nav .multilevelMenu > ul > li h3 {
+.phonebar-nav .multilevelMenu>ul>li h3 {
     background: #fff;
 }
 
@@ -299,9 +336,9 @@
     color: #7189e3
 }
 
-.phonebar-nav .multilevelMenu > ul > li h3 span.list{
+.phonebar-nav .multilevelMenu>ul>li h3 span.list {
     float: right;
-    margin-top:11px;
+    margin-top: 11px;
     border-left: 4px solid;
     border-top: 4px solid transparent;
     border-bottom: 4px solid transparent;
@@ -336,5 +373,3 @@
     margin-right: 25px;
     margin-bottom: 5px;
 }
-
-

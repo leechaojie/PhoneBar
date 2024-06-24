@@ -28,7 +28,7 @@ class DialPad extends Dialog {
      */
     _generateContentNode() {
         let contentNode = document.createElement('div');
-        contentNode.className = 'dialpad clearfloat';
+        contentNode.className = 'dialpad clearfix';
         contentNode.onselectstart = () => {
             return false
         };
@@ -67,17 +67,38 @@ class DialPad extends Dialog {
      * @private
      */
     _generatePhoneNumberNode() {
-        let phoneNumberParentNode = document.createElement('div');
+        const phoneNumberParentNode = document.createElement('div');
         phoneNumberParentNode.className = 'input-group';
 
         // 电话号码输入框
-        let phoneNumberNode = document.createElement('div');
+        const phoneNumberNode = document.createElement('div');
         phoneNumberNode.className = 'phoneNumber';
-        let phoneNumberTextField = this._phoneNumberTextField = document.createElement('input');
+        const phoneNumberTextField = this._phoneNumberTextField = document.createElement('input');
         phoneNumberTextField.type = 'text';
+        phoneNumberTextField.setAttribute('autocomplete', 'off');
         phoneNumberTextField.className = 'number';
         phoneNumberTextField.name = 'phoneNumber';
+        const phoneNumberClearBtn = document.createElement('div');
+        phoneNumberClearBtn.className = 'clear';
+        phoneNumberClearBtn.innerHTML = '<i class="icon-clear"></i>';
+        phoneNumberClearBtn.onclick = () => {
+            this.setPhoneNumber('');
+            phoneNumberClearBtn.style.display = 'none';
+        }
+        phoneNumberTextField.oninput = () => {
+            if (this._phoneNumberTextField.value) {
+                phoneNumberClearBtn.style.display = 'block';
+            } else {
+                phoneNumberClearBtn.style.display = 'none';
+            }
+        }
+        phoneNumberTextField.onblur = () => {
+            setTimeout(() => {
+                this._phoneNumberTextField.scrollLeft = this._phoneNumberTextField.scrollWidth;
+            }, 0);
+        }
         phoneNumberNode.appendChild(phoneNumberTextField);
+        phoneNumberNode.appendChild(phoneNumberClearBtn);
 
         // 号码盘显示隐藏切换按钮
         let slideDialPadBtn = document.createElement('button');
@@ -116,7 +137,7 @@ class DialPad extends Dialog {
      */
     _generateNumberPadNode() {
         let numberPadNode = this.numberPadNode = document.createElement('ul');
-        numberPadNode.className = 'numberpad clearfloat';
+        numberPadNode.className = 'numberpad clearfix';
         numberPadNode.style.display = 'none';
 
         for (let i = 1; i <= 12; i++) {
@@ -135,15 +156,21 @@ class DialPad extends Dialog {
                     keyButton.innerText = i;
                     break;
             }
-            keyButton.onclick = this._onKeyClick.bind(this, keyButton.innerText);
+            keyButton.onmousedown = (e) => {
+                this._onKeyMousedown(e, keyButton.innerText)
+            };
             numberPadNode.appendChild(keyButton);
         }
 
         return numberPadNode;
     }
 
-    _onKeyClick(number) {
+    _onKeyMousedown(e, number) {
+        e.preventDefault();
         this.setPhoneNumber(this.getPhoneNumber() + number);
+        this._phoneNumberTextField.dispatchEvent(new Event('input'));
+        this._phoneNumberTextField.scrollLeft = this._phoneNumberTextField.scrollWidth;
+        this._phoneNumberTextField.focus();
     }
 
     /**
@@ -152,35 +179,20 @@ class DialPad extends Dialog {
      * @private
      */
     _generateCallControllerNode() {
-        let ctlBtnNode = document.createElement('ul');
+        const ctlBtnNode = document.createElement('ul');
         ctlBtnNode.className = 'clearfix';
 
-        // 清除键
-        let removeButton = document.createElement('li');
-        removeButton.className = 'remove';
-        removeButton.title = '清除';
-        removeButton.innerText = '清除';
-        removeButton.onclick = () => {
-            let phoneNumber = this.getPhoneNumber();
-            this.setPhoneNumber(phoneNumber.substr(0, phoneNumber.length - 1));
-        };
-        removeButton.ondblclick = () => {
-            this.setPhoneNumber('')
-        };
-
         // 挂机键
-        let hangupButton = document.createElement('li');
+        const hangupButton = document.createElement('li');
         hangupButton.className = 'hangup';
         hangupButton.title = '挂断';
         hangupButton.innerHTML = '<i class="icon-hangup"></i>';
         hangupButton.onclick = () => {
             this.emit('hangupButtonClick');
         };
-
         if (this.dynamicButton) {
             ctlBtnNode.appendChild(this.dynamicButton);
         }
-        ctlBtnNode.appendChild(removeButton);
         ctlBtnNode.appendChild(hangupButton);
         return ctlBtnNode;
     }
@@ -192,11 +204,11 @@ class DialPad extends Dialog {
                             className,
                             onClick
                         }) {
-        let button = document.createElement(tagName);
+        const button = document.createElement(tagName);
         id && (button.id = id);
         className && (button.className = className);
         btnName && (button.title = btnName);
-        btnName && (button.innerText = btnName);
+        button.innerHTML = '<i class="icon-answer"></i>';
         utils.isFunction(onClick) && (button.onclick = onClick);
         return button;
     }

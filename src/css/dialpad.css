@@ -3,109 +3,161 @@
     width: 248px;
 }
 
-.dialpad{
+.dialpad {
     width: 234px;
     height: auto;
-    background: #ececec;
+    background-color: var(--color-primary-table, var(--color-primary-translucent));
     padding: 10px 5px 10px 7px;
 }
+
 .dialpad .select_width {
     width: 225px;
     margin-left: 5px;
     margin-bottom: 5px;
 }
-.dialpad .input-group{
+
+.dialpad .input-group {
     position: relative;
     display: table;
     border-collapse: separate;
 }
 
 .dialpad .slidedialpad {
-    height:34px;
+    height: 32px;
 }
+
 .icon-slidedialpad {
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    background: url('../assets/images/slide-dial-pad.png') no-repeat center;
+    width: 16px;
+    height: 16px;
+    background: url('../assets/images/slide-dial-pad.png');
+    background-size: cover;
     vertical-align: middle;
 }
-.phoneNumber{
+
+.phoneNumber {
     width: 180px;
     height: 32px;
-    border: 1px solid #e5e6e7;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
     font-size: 14px;
+    color: #333333;
     background: white;
     float: left;
     margin-left: 5px;
     margin-right: 3px;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 4px;
 }
-.phoneNumber span{
+
+.phoneNumber span {
     display: inline-block;
     width: 32px;
     height: 32px;
     text-align: center;
     line-height: 33px;
 }
-.phoneNumber .number{
+
+.phoneNumber .number {
     float: right;
     width: 170px;
+    height: 32px;
     outline: none;
     border: 0;
-    text-align: right;
-    margin: 6px 6px 0 5px
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 30px 0 0;
 }
-.dialpad ul{
+
+.phoneNumber .clear {
+    display: none;
+    position: absolute;
+    height: 32px;
+    padding: 9px 8px;
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.dialpad ul {
     padding: 0;
     margin: 0;
 }
-.dialpad ul li{
+
+.dialpad ul li {
     list-style: none;
     width: 70px;
     height: 50px;
     float: left;
     text-align: center;
-    font-weight: 900;
-    font-size: 25px;
+    font-weight: 600;
+    font-size: 18px;
     line-height: 50px;
-    background: #fbfbfb;
+    background: #fff;
     margin: 6px 0 0 6px;
     border-radius: 3px;
     cursor: pointer;
 }
+
 .dialpad .dialbtn {
     font-weight: 900;
     font-size: 15px;
     line-height: 50px;
+    width: 108px;
 }
-.dialpad ul li i{
+
+.dialpad ul li i {
     line-height: 50px;
 }
-.dialpad ul li:hover,
-.phoneNumber span:hover{
-    background: #e2e2e2
-}
-.dialpad ul li:active,
-.phoneNumber span:active{
-    background: #c6c6c6
-}
-.hangup {
 
+.dialpad ul li:hover,
+.phoneNumber span:hover {
+    background: #f3f3f3;
 }
-.icon-hangup {
+
+.dialpad ul li:active,
+.phoneNumber span:active {
+    background: #f1f1f1;
+}
+
+.dialpad ul li.hangup {
+    width: 108px;
+}
+
+.icon-answer {
     display: inline-block;
-    width: 32px;
-    height: 32px;
-    background: url('../assets/images/hangUp.png') no-repeat center;
+    width: 28px;
+    height: 28px;
+    background: url('../assets/images/answer.png');
+    background-size: cover;
     vertical-align: middle;
 }
 
-.dialpad ul li.backspace img{
+.icon-hangup {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background: url('../assets/images/hangUp.png');
+    background-size: cover;
+    vertical-align: middle;
+}
+
+.icon-clear {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url('../assets/images/clear.png');
+    background-size: cover;
+}
+
+.dialpad ul li.backspace img {
     width: 20px;
 }
+
 .dialpad .remove,
-.dialpad .ringing_dialpad{
+.dialpad .ringing_dialpad {
     font-weight: 900;
     font-size: 15px;
     line-height: 50px;

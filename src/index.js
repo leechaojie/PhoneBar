@@ -600,7 +600,6 @@ class PhoneBar extends EventEmitter {
         if (line.lineState === LineState.HELD) {
             this.agentApi.completeTransfer();
             this.dynamicButton.title = '咨询';
-            this.dynamicButton.innerText = '咨询';
         } else {
             let thisExten = this.agent.thisDN;
             if (line.phoneNumber === phoneNumber) {
@@ -613,7 +612,6 @@ class PhoneBar extends EventEmitter {
                     // 延迟加载
                     this.dialPad.setPhoneNumber(phoneNumber);
                     this.dynamicButton.title = '转出';
-                    this.dynamicButton.innerText = '转出';
                 } else {
                     utils.showMessage("当前线路未在通话中，不能转接");
                 }

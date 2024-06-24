@@ -18,7 +18,7 @@ class PhoneBarComponent extends EventEmitter {
         super();
 
         this.id = `phoneBar-${autoIncrementId++}`;
-        this._rootNodeClassName = 'phonebar-nav clearfloat';
+        this._rootNodeClassName = 'phonebar-nav clearfix';
         this.agentStateMenu = new AgentStateMenu()
 
         this.buttonList = [

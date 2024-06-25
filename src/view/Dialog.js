@@ -1,7 +1,6 @@
 import '../css/dialog.css';
 import EventEmitter from 'eventemitter3';
 
-
 const rootNodeClassName = 'cc-dialog';
 let autoIncrementId = 0;
 
@@ -17,8 +16,8 @@ class Dialog extends EventEmitter {
         this.id = `dialog-${autoIncrementId++}`;
         this._title = title;
 
-        this.diffX=0;
-        this.diffY=0;
+        this.diffX = 0;
+        this.diffY = 0;
 
         this.create();
     }
@@ -46,7 +45,7 @@ class Dialog extends EventEmitter {
      */
     _generateTitleNode() {
         let titleNode = this._titleNode = document.createElement('div');
-        titleNode.className = 'title';
+        titleNode.className = 'cc-dialog__header';
         titleNode.innerText = this._title;
         titleNode.addEventListener('mousedown', this.mouseHandler.bind(this));
         return titleNode;
@@ -63,43 +62,49 @@ class Dialog extends EventEmitter {
      * @private
      */
     _generateWindowControllerNode() {
-        let ctlWinNode = document.createElement('div');
-        ctlWinNode.className = 'ctlwin';
+        const ctlWinNode = document.createElement('div');
+        ctlWinNode.className = 'cc-dialog__close';
 
-        let closeBtn = document.createElement('a');
+        const closeBtn = document.createElement('span');
         closeBtn.className = 'close';
-        closeBtn.href = 'javascript:void(0);';
-        closeBtn.onclick = this.onClose.bind(this);
+        ctlWinNode.onclick = this.onClose.bind(this);
 
         ctlWinNode.appendChild(closeBtn);
         return ctlWinNode;
     }
 
-    mouseHandler(e){
-        switch(e.type){
-            case 'mousedown':
-                this.draggingObj = e.target.offsetParent;
-                if(this.draggingObj != null){
-                    this.diffX=e.clientX-this.draggingObj.offsetLeft;
-                    this.diffY=e.clientY-this.draggingObj.offsetTop;
-                    document.addEventListener('mousemove', this.titleMouseMoveHandler = this.mouseHandler.bind(this));
-                    document.addEventListener('mouseup', this.titleMouseUpHandler = this.mouseHandler.bind(this));
-                }
-                break;
-            case 'mousemove':
-                if(this.draggingObj){
-                    this.draggingObj.style.left=`${e.clientX-this.diffX}px`;
-                    this.draggingObj.style.top=`${e.clientY-this.diffY}px`;
-                }
-                break;
-            case 'mouseup':
-                document.removeEventListener('mousemove', this.titleMouseMoveHandler);
-                document.removeEventListener('mouseup', this.titleMouseUpHandler);
-                this.draggingObj =null;
-                this.diffX=0;
-                this.diffY=0;
-                break;
+    mouseHandler(e) {
+        if (e.type === 'mousedown') {
+            this.draggingObj = e.target.closest(`.${rootNodeClassName}`);
+            if (this.draggingObj) {
+                this.diffX = e.clientX - this.draggingObj.offsetLeft;
+                this.diffY = e.clientY - this.draggingObj.offsetTop;
+                document.addEventListener('mousemove', this.titleMouseMoveHandler = this.mouseMoveHandler.bind(this));
+                document.addEventListener('mouseup', this.titleMouseUpHandler = this.mouseUpHandler.bind(this));
+                
+                e.preventDefault();
+                e.stopPropagation(); 
+            }
         }
+    }
+
+    mouseMoveHandler(e) {
+        if (this.draggingObj) {
+            requestAnimationFrame(() => {
+                if (this.draggingObj) {  // 再次检查，确保在动画帧执行时对象仍然存在
+                    this.draggingObj.style.left = `${e.clientX - this.diffX}px`;
+                    this.draggingObj.style.top = `${e.clientY - this.diffY}px`;
+                }
+            });
+        }
+    }
+
+    mouseUpHandler(e) {
+        document.removeEventListener('mousemove', this.titleMouseMoveHandler);
+        document.removeEventListener('mouseup', this.titleMouseUpHandler);
+        this.draggingObj = null;
+        this.diffX = 0;
+        this.diffY = 0;
     }
 
     /**

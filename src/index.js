@@ -665,7 +665,7 @@ class PhoneBar extends EventEmitter {
 
         this.dynamicButton = DialPad.createButton({
             btnName: btnName,
-            className: 'text-navy dialbtn',
+            className: 'answer',
             onClick: onDynamicButtonClick
         });
 

@@ -25,7 +25,7 @@
   -webkit-animation-duration: .3s;
 }
 
-.cc-dialog .title {
+.cc-dialog .cc-dialog__header {
   padding: 0 80px 0 12px;
   height: 42px;
   line-height: 42px;
@@ -39,25 +39,26 @@
   cursor: all-scroll;
 }
 
-.cc-dialog .ctlwin {
+.cc-dialog .cc-dialog__close {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
   position: absolute;
-  width: 16px;
-  height: 16px;
-  padding: 3px;
-  right: 12px;
-  top: 13px;
-  line-height: initial;
-  overflow: hidden;
+  top: 0;
+  right: 0;
+  cursor: pointer;
 }
 
-.cc-dialog .ctlwin .close {
-  position: relative;
+.cc-dialog .cc-dialog__close:hover {
+  opacity: .6;
+}
+
+.cc-dialog .cc-dialog__close .close {
+  display: inline-block;
   width: 10px;
   height: 10px;
-  float: left;
   background: url('../assets/images/close.png') no-repeat center;
-}
-
-.cc-dialog .ctlwin .close:hover {
-  opacity: .6;
 }

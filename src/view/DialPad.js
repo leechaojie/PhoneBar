@@ -28,7 +28,7 @@ class DialPad extends Dialog {
      */
     _generateContentNode() {
         let contentNode = document.createElement('div');
-        contentNode.className = 'dialpad clearfix';
+        contentNode.className = 'cc-dialpad clearfix';
         contentNode.onselectstart = () => {
             return false
         };
@@ -68,11 +68,11 @@ class DialPad extends Dialog {
      */
     _generatePhoneNumberNode() {
         const phoneNumberParentNode = document.createElement('div');
-        phoneNumberParentNode.className = 'input-group';
+        phoneNumberParentNode.className = 'cc-tel-box';
 
         // 电话号码输入框
         const phoneNumberNode = document.createElement('div');
-        phoneNumberNode.className = 'phoneNumber';
+        phoneNumberNode.className = 'cc-tel-input';
         const phoneNumberTextField = this._phoneNumberTextField = document.createElement('input');
         phoneNumberTextField.type = 'text';
         phoneNumberTextField.setAttribute('autocomplete', 'off');
@@ -80,7 +80,7 @@ class DialPad extends Dialog {
         phoneNumberTextField.name = 'phoneNumber';
         const phoneNumberClearBtn = document.createElement('div');
         phoneNumberClearBtn.className = 'clear';
-        phoneNumberClearBtn.innerHTML = '<i class="icon-clear"></i>';
+        phoneNumberClearBtn.innerHTML = '<i class="cc-icon-clear"></i>';
         phoneNumberClearBtn.onclick = () => {
             this.setPhoneNumber('');
             phoneNumberClearBtn.style.display = 'none';
@@ -103,9 +103,9 @@ class DialPad extends Dialog {
         // 号码盘显示隐藏切换按钮
         let slideDialPadBtn = document.createElement('button');
         slideDialPadBtn.type = 'button';
-        slideDialPadBtn.className = 'cc-btn btn-white slidedialpad';
+        slideDialPadBtn.className = 'cc-btn cc-btn-white slidedialpad';
         slideDialPadBtn.title = '数字键盘';
-        slideDialPadBtn.innerHTML = '<i class="icon-slidedialpad"></i>';
+        slideDialPadBtn.innerHTML = '<i class="cc-icon-slidedialpad"></i>';
         slideDialPadBtn.onclick = this.toggleExpandNumberPad.bind(this);
 
         phoneNumberParentNode.appendChild(phoneNumberNode);
@@ -136,12 +136,12 @@ class DialPad extends Dialog {
      * @private
      */
     _generateNumberPadNode() {
-        let numberPadNode = this.numberPadNode = document.createElement('ul');
-        numberPadNode.className = 'numberpad clearfix';
+        const numberPadNode = this.numberPadNode = document.createElement('div');
+        numberPadNode.className = 'cc-dialpad-num clearfix';
         numberPadNode.style.display = 'none';
 
         for (let i = 1; i <= 12; i++) {
-            let keyButton = document.createElement('li');
+            const keyButton = document.createElement('div');
             switch (i) {
                 case 10:
                     keyButton.innerText = '*';
@@ -156,6 +156,7 @@ class DialPad extends Dialog {
                     keyButton.innerText = i;
                     break;
             }
+            keyButton.className = 'cc-dialpad-num_key';
             keyButton.onmousedown = (e) => {
                 this._onKeyMousedown(e, keyButton.innerText)
             };
@@ -179,14 +180,14 @@ class DialPad extends Dialog {
      * @private
      */
     _generateCallControllerNode() {
-        const ctlBtnNode = document.createElement('ul');
-        ctlBtnNode.className = 'clearfix';
+        const ctlBtnNode = document.createElement('div');
+        ctlBtnNode.className = 'cc-dialpad-actions clearfix';
 
         // 挂机键
-        const hangupButton = document.createElement('li');
-        hangupButton.className = 'hangup';
+        const hangupButton = document.createElement('div');
+        hangupButton.className = 'cc-dialpad-actions_key hangup';
         hangupButton.title = '挂断';
-        hangupButton.innerHTML = '<i class="icon-hangup"></i>';
+        hangupButton.innerHTML = '<i class="cc-icon-hangup"></i>';
         hangupButton.onclick = () => {
             this.emit('hangupButtonClick');
         };
@@ -199,16 +200,16 @@ class DialPad extends Dialog {
 
     static createButton({
                             id,
-                            tagName = 'li',
+                            tagName = 'div',
                             btnName,
                             className,
                             onClick
                         }) {
         const button = document.createElement(tagName);
         id && (button.id = id);
-        className && (button.className = className);
+        className && (button.className = `cc-dialpad-actions_key ${className}`);
         btnName && (button.title = btnName);
-        button.innerHTML = '<i class="icon-answer"></i>';
+        button.innerHTML = '<i class="cc-icon-answer"></i>';
         utils.isFunction(onClick) && (button.onclick = onClick);
         return button;
     }

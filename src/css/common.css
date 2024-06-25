@@ -1,4 +1,10 @@
-/*清除浮动代码*/
+:root {
+    /* 主题颜色 */
+    --color-primary: #2B72FE;
+    /* 次要主题色 */
+    --color-secondary: #ECF5FF;
+}
+
 .clearfix:after {
     display: block;
     clear: both;
@@ -7,7 +13,6 @@
 
 .pull-left{float:left;}
 .pull-right{float:right;}
-
 
 
 /*表单*/

@@ -2,7 +2,7 @@
 .cc-dialpad {
     width: 246px;
     height: auto;
-    background-color: var(--color-primary-table, var(--color-primary-translucent));
+    background-color: var(--color-secondary);
     padding: 11px 12px;
     box-sizing: border-box;
 }

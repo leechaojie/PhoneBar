@@ -1,10 +1,3 @@
-:root {
-  /* 主题颜色 */
-  --color-primary: #2B72FE;
-  /* 半透明主题色 */
-  --color-primary-translucent: #ECF5FF;
-}
-
 .cc-dialog {
   position: fixed;
   top: 20%;

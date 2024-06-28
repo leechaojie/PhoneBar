@@ -14,9 +14,13 @@ const emptyFunction = function () {
  */
 class PhoneBarComponent extends EventEmitter {
 
-    constructor() {
+    constructor({
+        onTransferClick = null,
+        onConferenceClick = null,
+    }) {
         super();
-
+        this._onTransferClick = onTransferClick
+        this._onConferenceClick = onConferenceClick
         this.id = `phoneBar-${autoIncrementId++}`;
         this._rootNodeClassName = 'phonebar-nav clearfix';
         this.agentStateMenu = new AgentStateMenu()
@@ -52,13 +56,14 @@ class PhoneBarComponent extends EventEmitter {
             {
                 'name': 'retrieve', 'component': new PhoneBarButton({
                     title: '接回',
-                    iconClassName: 'retrieve'
+                    iconClassName: 'retrieve',
                 }), 'sort': 6
             },
             {
                 'name': 'transfer', 'component': new MultilevelMenu({
                     title: '转接',
-                    iconClassName: 'transfer'
+                    iconClassName: 'transfer',
+                    customMethods: this._onTransferClick
                 }), 'sort': 7
             },
             {
@@ -70,7 +75,8 @@ class PhoneBarComponent extends EventEmitter {
             {
                 'name': 'conference', 'component': new MultilevelMenu({
                     title: '会议',
-                    iconClassName: 'conference'
+                    iconClassName: 'conference',
+                    customMethods: this._onConferenceClick
                 }), 'sort': 9
             }
         ];
@@ -134,9 +140,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").disable();
+        this.getButtonComponent("transfer").enable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").disable();
+        this.getButtonComponent("conference").enable();
     }
 
     /**
@@ -149,9 +155,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").disable();
+        this.getButtonComponent("transfer").enable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").disable();
+        this.getButtonComponent("conference").enable();
     }
 
     /**
@@ -164,9 +170,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").disable();
+        this.getButtonComponent("transfer").enable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").disable();
+        this.getButtonComponent("conference").enable();
     }
 
     /**

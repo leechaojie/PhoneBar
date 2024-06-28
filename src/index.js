@@ -47,6 +47,11 @@ class PhoneBar extends EventEmitter {
      * @param onAgentStatusChange 坐席状态变更事件
      * @param onQueueUpdate 坐席队列更新事件
      * @param onResetQueues 重置技能组结果事件
+     * @param onQueueListUpdate 技能组列表更新事件
+     * @param onTransferAgentListUpdate  转接坐席列表更新事件
+     * @param onConferenceInfoUpdate  会议列表更新事件
+     * @param onTransferClick 转接按钮点击时间
+     * @param onConferenceClick 会议按钮点击时间
      * @param onLinkDisconnected 连接被服务器断开事件
      */
     constructor({
@@ -86,6 +91,11 @@ class PhoneBar extends EventEmitter {
                     onLinkDisconnected,
                     onUserInputCompleted,
                     onResetQueues,
+                    onQueueListUpdate,
+                    onTransferAgentListUpdate,
+                    onConferenceInfoUpdate,
+                    onTransferClick,
+                    onConferenceClick,
                     onQueueUpdate,
                 }) {
         super();
@@ -122,7 +132,10 @@ class PhoneBar extends EventEmitter {
         });
 
         // 初始化ui
-        this.phoneBarComponent = new PhoneBarComponent();
+        this.phoneBarComponent = new PhoneBarComponent({
+            onTransferClick: onTransferClick,
+            onConferenceClick: onConferenceClick
+        });
 
         this.getComponent('agentState').on('agentStateSelected', this._onAgentStateSelected.bind(this));
         this.getComponent('openDialPad').on('click', () => {
@@ -140,14 +153,28 @@ class PhoneBar extends EventEmitter {
         this.getComponent('retrieve').on('click', () => {
             this.agentApi.retrieveCall();
         });
+        this.getComponent('transfer').on('click', () => {
+            this.emit('transferClick', this.transferData);
+            this.requestQueueList()
+            this.requestTransferAgentData()
+        });
         this.getComponent('transfer').on('itemClick', this.onTransferItemClick.bind(this));
         this.getComponent('rollout').on('click', () => {
             this.agentApi.completeTransfer();
+        });
+        this.getComponent('conference').on('click', () => {
+            this.emit('conferenceClick', this.conferenceData);
         });
         this.getComponent('conference').on('itemClick', this.onConferenceItemClick.bind(this));
 
         // 三方通话缓存数据
         this.threewayCallData = [];
+
+        // 转接缓存数据
+        this.transferData = null;
+
+        // 会议缓存数据
+        this.conferenceData = null;
 
         // 添加监听-------------------
         utils.isFunction(onScreenPopup) && this.on('screenPopup', onScreenPopup);
@@ -159,7 +186,11 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onUserInputCompleted) && this.connection.on('userInputCompleted', onUserInputCompleted);
         utils.isFunction(onQueueUpdate) && this.connection.on('eventQueued', onQueueUpdate);
         utils.isFunction(onResetQueues) && this.connection.on('resetQueues', onResetQueues);
-
+        utils.isFunction(onQueueListUpdate) && this.connection.on('queueListUpdate', onQueueListUpdate);
+        utils.isFunction(onTransferAgentListUpdate) && this.connection.on("transferAgentListUpdate", onTransferAgentListUpdate);
+        utils.isFunction(onConferenceInfoUpdate) && this.on('conferenceInfo', onConferenceInfoUpdate);
+        utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
+        utils.isFunction(onConferenceClick) && this.on('conferenceClick', onConferenceClick);
         this.eventHandler();
         this.initial();
     }
@@ -182,10 +213,12 @@ class PhoneBar extends EventEmitter {
         // 转接菜单列表事件
         this.connection.on(MessageID.EventTransferMenuList.toString(), (data) => {
             this.updateTransferMenu(data.menuList);
+            this.transferData = data.menuList
         });
-        // 转接菜单列表事件
+        // 会议菜单列表事件
         this.connection.on(MessageID.EventConferenceMenuList.toString(), (data) => {
             this.updateConferenceMenu(data.menuList);
+            this.conferenceData = data.menuList
         });
         // 自动就绪配置
         this.connection.on(MessageID.EventAutoReadyConfig.toString(), (data) => {
@@ -207,39 +240,34 @@ class PhoneBar extends EventEmitter {
                 this.agentConfig.maxAfterWorkTime = 0;
             }
 
+            // 合并后端配置的自定义状态
             const agentStateExtList = data.agentStateExtList
             if (agentStateExtList && agentStateExtList.length > 0) {
-                console.log("自定义坐席状态", agentStateExtList);
-                // this.emit('mergeRemoteActionList', agentStateExtList);
-                // const data = [
-                //     {
-                //         "reasonCode": -1,
-                //         "key": "ready",
-                //         "name": "就就",
-                //         "color": "#E80E0E"
-                //     },
-                //     {
-                //         "reasonCode": 11,
-                //         "key": "reason1",
-                //         "name": "测试状态1",
-                //         "color": "#E80E0E"
-                //     },
-                //     {
-                //         "reasonCode": 3,
-                //         "key": "busy",
-                //         "name": "1示忙",
-                //         "color": "#775837"
-                //     },
-                //     {
-                //         "reasonCode": 5,
-                //         "key": "rest",
-                //         "name": "2休息",
-                //         "color": "#382EE4"
-                //     }
-                // ]
                 this.phoneBarComponent.mergeRemoteActionList(agentStateExtList);
             }
         });
+
+        // 需要转接的座席信息
+        this.connection.on(MessageID.CrmTransferAgentInfo.toString(), (data) => {
+            this.connection.emit('transferAgentListUpdate', data);
+            // utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
+        });
+
+        // 班组列表
+        // this.connection.on(MessageID.CrmGroupList.toString(), (data) => {
+        //     console.log('CrmGroupList-3506', data);
+        // });
+
+        // 技能组列表
+        this.connection.on(MessageID.CrmQueueList.toString(), (data) => {
+            this.connection.emit('queueListUpdate', data);
+        });
+
+        // 会议信息
+        this.connection.on(MessageID.CrmConferenceAgentInfo.toString(), (data) => {
+            this.connection.emit('conferenceInfo', data);
+        });
+
 
         // 监听座席状态定时器
         this.agent.stateTimer.on('change', (seconds, timerValue) => {
@@ -388,6 +416,7 @@ class PhoneBar extends EventEmitter {
         }
         this.phoneBarComponent.show();
     }
+
     /**
      * 根据名称获取组件
      * @param {String} componentName
@@ -397,6 +426,20 @@ class PhoneBar extends EventEmitter {
             return this.phoneBarComponent.getButtonComponent(componentName);
         }
         return null;
+    }
+
+    /**
+     * 获取转接数据
+     */
+    get getTransferData() {
+        return this.transferData;
+    }
+
+    /**
+     * 获取会议数据
+     */
+    get getConferenceData() {
+        return this.conferenceData;
     }
 
     /**
@@ -542,6 +585,35 @@ class PhoneBar extends EventEmitter {
     }
 
     /**
+     * 转接事件处理
+     * @param type 转接类型
+     * @param id 转接id或号码
+     */
+    transferHandler(type, id) {
+        switch (type) {
+            case "outside": // 转外线号码
+                this._transferThis(id);
+                break;
+
+            case "group": // 转技能组
+                this.agentApi.singleStepTransfer(id);
+                break;
+
+            case "ivr": // 转IVR
+                this.agentApi.singleStepTransfer(`ivr_${id}`);
+                break;
+
+            case "key": // 转按键采集
+                this.agentApi.digitCollections(id);
+                break;
+
+            case "satisfaction": // 转满意度
+                this.agentApi.singleStepTransfer(`icp_${id}`);
+                break;
+        }
+    }
+
+    /**
      * 更新会议下拉菜单选项
      */
     updateConferenceMenu(data) {
@@ -593,10 +665,11 @@ class PhoneBar extends EventEmitter {
     /**
      * 转接时弹出拨号盘的拨号按钮控制
      * @private
+     * @param phoneNumber
      */
-    _transferThis() {
-        let phoneNumber = this.dialPad.getPhoneNumber();
-        let line = this.linePool.getCurrentLine();
+    _transferThis(num) {
+        const phoneNumber = num || this.dialPad.getPhoneNumber();
+        const line = this.linePool.getCurrentLine();
         if (line.lineState === LineState.HELD) {
             this.agentApi.completeTransfer();
             this.dynamicButton.title = '咨询';
@@ -678,6 +751,74 @@ class PhoneBar extends EventEmitter {
             }
         });
         this.dialPad.show();
+    }
+
+    /**
+     * 请求转接坐席数据
+     * @param limitAgent 查询座席名字或账号
+     * @param state 查询状态
+     * @param queueCode 查询技能组
+     * @param grpStreamNumber 查询班组
+     */
+    requestTransferAgentData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
+        // 请求转接坐席数据
+        const data = {
+            "messageId": 3501,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            limitAgent,
+            state,
+            queueCode,
+            grpStreamNumber
+        };
+        this.connection.send(data);
+    }
+
+    /**
+     * 请求班组列表
+     */
+    // requestTeamList() {
+    //     const data = {
+    //         "messageId": 3505,
+    //         "thisDN": this.agent.thisDN,
+    //         "agentID": this.agent.agentID,
+    //         "thisQueues": this.agent.thisQueues
+    //     };
+    //     this.connection.send(data);
+    // }
+
+    /**
+     * 请求技能组列表
+     */
+    requestQueueList() {
+        // 请求班组列表
+        const data = {
+            "messageId": 3507,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            "thisQueues": this.agent.thisQueues
+        };
+        this.connection.send(data);
+    }
+
+    /**
+     * 请求会议数据
+     * @param limitAgent 查询座席名字或账号
+     * @param state 查询状态
+     * @param queueCode 查询技能组
+     * @param grpStreamNumber 查询班组
+     */
+    requestConferenceData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
+        const data = {
+            "messageId": 3509,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            limitAgent,
+            state,
+            queueCode,
+            grpStreamNumber
+        };
+        this.connection.send(data);
     }
 
     /**

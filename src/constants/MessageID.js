@@ -39,7 +39,6 @@ export const MessageID = {
     RequestMonitorAgentList:3201,
     RequestAutoReadyConfig:3601,
 
-
     // 响应事件
     EventWelcome: 2,
     EventPong: 3,
@@ -86,8 +85,16 @@ export const MessageID = {
     EventCallLossDownCSV: 1513,
     EventCampaignContactDownCSV: 1514,
     EventCampaignLoadByCId: 1515,
-    EventDownRecord: 3501,
-    EventRecordList: 3502,
+    // EventDownRecord: 3501,
+    // EventRecordList: 3502,
+    RequestCrm4TransferAgent: 3501, // 请求转接坐席数据
+    CrmTransferAgentInfo: 3502, // 需要转接的座席信息
+    RequestCrm4GroupLis: 3505, // 请求班组列表
+    CrmGroupList: 3506, // 班组列表
+    RequestCrm4QueueList: 3507, // 请求技能组列表
+    CrmQueueList: 3508, // 技能组列表
+    RequestCrm4ConferenceAgent: 3509, // 请求会议数据
+    CrmConferenceAgentInfo: 3510, // 会议数据
     EventTransferMenuList: 3101,
     EventConferenceMenuList: 3102,
     EventAutoReadyConfig: 3103,

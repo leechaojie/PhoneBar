@@ -1,81 +1,8 @@
 /// <reference lib="dom"/>
 
-interface IObject<T = any> {
-  [key: string]: T;
-}
-
-/**
- * 按钮名称类型
- */
-type ComponentName =
-  /**
-   * 打开拨号盘
-   */
-  | 'openDialPad'
-  /**
-   * 接听
-   */
-  | 'answer'
-  /**
-   * 挂断
-   */
-  | 'hangup'
-  /**
-   * 保持
-   */
-  | 'hold'
-  /**
-   * 接回
-   */
-  | 'retrieve'
-  /**
-   * 转接
-   */
-  | 'transfer'
-  /**
-   * 转出
-   */
-  | 'rollout'
-  /**
-   * 会议
-   */
-  | 'conference';
-
-/**
- * 按钮实例
- */
-declare class PhoneBarButton {
-
-  /**
-   * id
-   */
-  readonly id: string;
-
-  /**
-   * 状态
-   */
-  readonly rootNode: HTMLLIElement;
-
-  /**
-   * 隐藏按钮
-   */
-  hide(): void;
-
-  /**
-   * 显示按钮
-   */
-  show(): void;
-
-  /**
-   * 启用按钮
-   */
-  enable(): void;
-
-  /**
-   * 禁用按钮
-   */
-  disable(): void;
-}
+import AgentApi from "./types/agentApi";
+import PhoneBarButton from "./types/phoneBarButton";
+import { IObject, CustomNotReadyReason, ComponentName } from "./types/interface";
 
 declare class PhoneBar {
   constructor(options: PhoneBar.Options);
@@ -84,6 +11,13 @@ declare class PhoneBar {
    * 属性配置
    */
   readonly options: PhoneBar.Options;
+
+  /**
+   * AgentApi对象
+   * @readonly
+   * 此对象用于调用AgentApi接口
+   */
+  readonly agentApi: AgentApi;
 
   /**
    * 根据名称获取组件
@@ -109,6 +43,28 @@ declare class PhoneBar {
    */
   answerCallByQueue(callId: string, thisQueue: string): void;
 
+  /**
+   * 转接事件处理
+   * @param type 转接类型，可选值为：
+   * - `outside`: 转外线号码
+   * - `group`: 转技能组
+   * - `ivr`: 转IVR
+   * - `key`: 转按键采集
+   * - `satisfaction`: 转满意度
+   */
+  transferHandler(type: string, id: string): void;
+
+  /**
+   * 更新会议下拉菜单选项
+   */
+  updateConferenceMenu(): void;
+
+  /**
+   * 当会议菜单选项被点击时的事件处理函数
+   * @param val 选中菜单的数据
+   */
+  onConferenceItemClick(val: IObject): void;
+
 
   /**
    * 更新坐席排队信息
@@ -116,6 +72,54 @@ declare class PhoneBar {
    * 可以在点击排队列表时更新
    */
   updateQueueInfo(): void;
+
+  /**
+   * 转外线
+   * @private
+   * @param num 转外线的号码 
+   */
+  _transferThis(num?: string): void;
+
+  /**
+   * 显示多方通话弹出框
+   * @private
+   */
+  _showThreewayCallBox(): void;
+
+  /**
+   * 显示拨号盘
+   * @private
+   */
+  _showDialPad(): void;
+
+  /**
+   * 请求转接坐席数据
+   * 
+   * 向 CTI 服务器发送请求
+   * @param limitAgent 查询座席名字或账号
+   * @param state 查询状态
+   * @param queueCode 查询技能组
+   * @param grpStreamNumber 查询班组
+   */
+  requestTransferAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+
+  /**
+   * 请求技能组列表
+   * 
+   * 向 CTI 服务器发送请求
+   */
+  requestSkillList(): void
+
+  /**
+   * 请求会议数据
+   * 
+   * 向 CTI 服务器发送请求
+   * @param limitAgent 查询座席名字或账号
+   * @param state 查询状态
+   * @param queueCode 查询技能组
+   * @param grpStreamNumber 查询班组
+   */
+  requestConferenceData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 销毁组件
@@ -182,46 +186,13 @@ declare class PhoneBar {
   };
 }
 
-declare namespace PhoneBar {  /**
-  * 需要修改的坐席状态码
-  */
-  type AllowedCustomNotReadyReasonCodes = 3 | 5 | 11 | 12 | 13 | 14 | 15 | 17;
-
-
-  /**
-   * 自定义定义未就绪状态名称
-   * @property {AllowedCode} code - 需要修改的code码:
-   * @property {string} name - 对应的状态名称
-   */
-  interface CustomNotReadyReason {
-
-    /**
-     * 状态码
-     * 只能使用以下值: 2, 5, 11, 12, 13, 14, 15, 17
-     * @property {3} - 示忙
-     * @property {5}- 休息
-     * @property {11} - 自定义1
-     * @property {12} - 自定义2
-     * @property {13} - 自定义3
-     * @property {14} - 自定义4
-     * @property {15} - 自定义5
-     * @property {17} - 自定义7
-     */
-    code: AllowedCustomNotReadyReasonCodes;
-
-    /**
-     * 状态名称
-     * 可以任意修改
-     */
-    name: string;
-  }
-
+declare namespace PhoneBar {
   interface Options {
     /**
      * 渲染容器
      *
      * @remarks
-     * 页面元素id，渲染到置顶元素内，默认追加到body内。创建对象前需保证改dom对象已存在。
+     * 页面元素id，电话条渲染到当前元素内，默认追加到body内。new PhoneBar 前需保证 DOM元素 已存在
      */
     renderTo: string;
 
@@ -363,62 +334,96 @@ declare namespace PhoneBar {  /**
      */
     customNotReadyReason?: CustomNotReadyReason[];
 
-
     /**
      * 坐席状态变更事件
      * @param newState 坐席当前状态值
      * @param beforeValue 变更前的状态值
      */
-    onAgentStatusChange?(newState: string, beforeValue: string): void;
+    onAgentStatusChange?: (newState: string, beforeValue: string) => void;
 
     /**
      * 弹屏事件
      * @param lineState 当前线路状态值
      * @param callInfo 通话信息
      */
-    onScreenPopup?(lineState: string, callInfo: IObject): void;
+    onScreenPopup?: (lineState: string, callInfo: IObject) => void;
 
     /**
      * 振铃事件
-     * @param callInfo 通话信息
+     * @param {Object} callInfo 通话信息
      */
-    onRinging?(callInfo: IObject): void;
+    onRinging?: (callInfo: IObject) => void;
 
     /**
      * 接通事件
-     * @param callInfo 通话信息
+     * @param {Object} callInfo 通话信息
      */
-    onTalking?(callInfo: IObject): void;
+    onTalking?: (callInfo: IObject) => void;
 
     /**
      * 挂机事件
-     * @param callInfo 通话信息
+     * @param {Object} callInfo 通话信息
      */
-    onHangup?(callInfo: IObject): void;
+    onHangup?: (callInfo: IObject) => void;
 
     /**
      * 重置技能组结果事件
-     * @param groupInfo 技能组信息
+     * @param {Object} groupInfo SDK 返回的重置技能组结果
      */
-    onResetQueues?(groupInfo: IObject): void;
+    onResetQueues?: (groupInfo: IObject) => void;
+
+    /**
+     * 技能组列表更新事件
+     * @param {Object} data SDK 返回的更新后的技能组列表数据
+     */
+    onQueueListUpdate?: (data: IObject) => void;
+
+    /**
+     * 转接坐席列表更新事件
+     * @param {Object} data SDK 返回的更新后的转接坐席列表数据。
+     */
+    onTransferAgentListUpdate?: (data: IObject) => void;
+
+    /**
+     * 会议信息更新事件
+     * @param {Object} data SDK 返回的更新后的会议信息
+     */
+    onConferenceInfoUpdate?: (data: IObject) => void;
 
     /**
      * 坐席排队信息更新事件
-     * @param queueInfo 坐席排队信息
+     * @param {Object} queueInfo 坐席排队信息
      */
-    onQueueUpdate?(queueInfo: IObject): void;
+    onQueueUpdate?: (queueInfo: IObject) => void;
 
     /**
      * 用户输入完成事件
-     * @param callInfo 通话信息
+     * @param {Object} callInfo 通话信息
      */
-    onUserInputCompleted?(data: IObject): void;
+    onUserInputCompleted?: (data: IObject) => void;
 
     /**
      * 连接被服务器断开事件
-     * @param callInfo 通话信息
+     * @param {Object} callInfo 通话信息
      */
-    onLinkDisconnected?(callInfo: IObject): void;
+    onLinkDisconnected?: (callInfo: IObject) => void;
+
+    /**
+     * 自定义转接按钮点击事件
+     * 
+     * 配置此事件后，点击转接按钮将不会展示默认UI
+     * @param {Array<Object>} data 转接数据
+     */
+    onTransferClick?: (data: IObject[]) => void;
+
+    /**
+     * 自定义会议按钮点击事件
+     * 
+     * 配置此事件后，点击会议按钮将不会展示默认UI
+     * @param {Array<Object>} data 会议数据
+     */
+    onConferenceClick?: (data: IObject[]) => void;
+
   }
 }
 

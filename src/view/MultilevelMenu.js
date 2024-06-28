@@ -12,7 +12,9 @@ class MultilevelMenu extends PhoneBarButton {
                     iconClassName,
                     visible = true,
                     enabled = false,
+                    customMethods = null,
                     menuData,
+                    onClick,
                     onItemClick
                 }) {
         super({
@@ -22,14 +24,18 @@ class MultilevelMenu extends PhoneBarButton {
 
         this.menuData = menuData;
         this._openClassName = 'open';
+        this._customMethods = customMethods;
 
-        this.on('click', (e) => { this._toggleMenu(e)});
-        document.addEventListener('click', this.onBodyClick = this._hideMenu.bind(this));
-        this.rootNode.onmouseleave = () => {this._hideMenu()};
+        if (utils.isFunction(this._customMethods)) {
+            utils.isFunction(onClick) && this.on('click', onClick);
+        } else {
+            this.on('click', (e) => { this._toggleMenu(e)});
+            document.addEventListener('click', this.onBodyClick = this._hideMenu.bind(this));
+            this.rootNode.onmouseleave = () => {this._hideMenu()};
+            utils.isFunction(onItemClick) && this.on('itemClick', onItemClick);
+            this.rootNode.appendChild(this.generateMenu());
+        }
 
-        utils.isFunction(onItemClick) && this.on('itemClick', onItemClick);
-
-        this.rootNode.appendChild(this.generateMenu());
     }
 
     generateMenu() {

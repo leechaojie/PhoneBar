@@ -93,8 +93,8 @@ export const MessageID = {
     CrmGroupList: 3506, // 班组列表
     RequestCrm4QueueList: 3507, // 请求技能组列表
     CrmQueueList: 3508, // 技能组列表
-    RequestCrm4ConferenceAgent: 3509, // 请求会议数据
-    CrmConferenceAgentInfo: 3510, // 会议数据
+    RequestCrm4ConferenceAgent: 3509, // 请求会议内的待邀请坐席数据
+    CrmConferenceAgentInfo: 3510, // 会议内的待邀请坐席数据
     EventTransferMenuList: 3101,
     EventConferenceMenuList: 3102,
     EventAutoReadyConfig: 3103,

@@ -51,8 +51,10 @@ declare class PhoneBar {
    * - `ivr`: 转IVR
    * - `key`: 转按键采集
    * - `satisfaction`: 转满意度
+   * - `agent`: 转坐席
+   * @param idOrNumber 转接id或号码 咨询时传入号码
    */
-  transferHandler(type: string, id: string): void;
+  transferHandler(type: string, idOrNumber: string): void;
 
   /**
    * 更新会议下拉菜单选项
@@ -64,7 +66,6 @@ declare class PhoneBar {
    * @param val 选中菜单的数据
    */
   onConferenceItemClick(val: IObject): void;
-
 
   /**
    * 更新坐席排队信息
@@ -111,7 +112,7 @@ declare class PhoneBar {
   requestSkillList(): void
 
   /**
-   * 请求会议数据
+   * 请求会议内待转接数据
    * 
    * 向 CTI 服务器发送请求
    * @param limitAgent 查询座席名字或账号
@@ -119,7 +120,7 @@ declare class PhoneBar {
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestConferenceData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+  requestConferenceAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 销毁组件
@@ -385,10 +386,15 @@ declare namespace PhoneBar {
     onTransferAgentListUpdate?: (data: IObject) => void;
 
     /**
-     * 会议信息更新事件
+     * 会议内待邀请坐席更新事件
      * @param {Object} data SDK 返回的更新后的会议信息
      */
-    onConferenceInfoUpdate?: (data: IObject) => void;
+    onConferenceAgentInfoUpdate?: (data: IObject) => void;
+
+    /**
+     * 会议列表更新事件
+     */
+    onConferenceInfoUpdate?: (data: IObject[]) => void;
 
     /**
      * 坐席排队信息更新事件

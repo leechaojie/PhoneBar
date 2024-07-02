@@ -140,9 +140,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").enable();
+        this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").enable();
+        this.getButtonComponent("conference").disable();
     }
 
     /**
@@ -155,9 +155,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").enable();
+        this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").enable();
+        this.getButtonComponent("conference").disable();
     }
 
     /**
@@ -170,9 +170,9 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("hangup").disable();
         this.getButtonComponent("hold").disable();
         this.getButtonComponent("retrieve").disable();
-        this.getButtonComponent("transfer").enable();
+        this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
-        this.getButtonComponent("conference").enable();
+        this.getButtonComponent("conference").disable();
     }
 
     /**

@@ -49,9 +49,9 @@ class PhoneBar extends EventEmitter {
      * @param onResetQueues 重置技能组结果事件
      * @param onQueueListUpdate 技能组列表更新事件
      * @param onTransferAgentListUpdate  转接坐席列表更新事件
-     * @param onConferenceInfoUpdate  会议列表更新事件
-     * @param onTransferClick 转接按钮点击时间
-     * @param onConferenceClick 会议按钮点击时间
+     * @param onConferenceAgentInfoUpdate  会议内的待邀请坐席数据
+     * @param onTransferClick 转接按钮点击事件
+     * @param onConferenceClick 会议按钮点击事件
      * @param onLinkDisconnected 连接被服务器断开事件
      */
     constructor({
@@ -93,6 +93,7 @@ class PhoneBar extends EventEmitter {
                     onResetQueues,
                     onQueueListUpdate,
                     onTransferAgentListUpdate,
+                    onConferenceAgentInfoUpdate,
                     onConferenceInfoUpdate,
                     onTransferClick,
                     onConferenceClick,
@@ -164,6 +165,9 @@ class PhoneBar extends EventEmitter {
         });
         this.getComponent('conference').on('click', () => {
             this.emit('conferenceClick', this.conferenceData);
+            this.connection.emit('threeWayCallUpdate', this.threewayCallData);
+            this.requestQueueList()
+            this.requestConferenceAgentData()
         });
         this.getComponent('conference').on('itemClick', this.onConferenceItemClick.bind(this));
 
@@ -188,9 +192,10 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onResetQueues) && this.connection.on('resetQueues', onResetQueues);
         utils.isFunction(onQueueListUpdate) && this.connection.on('queueListUpdate', onQueueListUpdate);
         utils.isFunction(onTransferAgentListUpdate) && this.connection.on("transferAgentListUpdate", onTransferAgentListUpdate);
-        utils.isFunction(onConferenceInfoUpdate) && this.on('conferenceInfo', onConferenceInfoUpdate);
+        utils.isFunction(onConferenceAgentInfoUpdate) && this.connection.on('conferenceAgentInfoUpdate', onConferenceAgentInfoUpdate);
         utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
         utils.isFunction(onConferenceClick) && this.on('conferenceClick', onConferenceClick);
+        utils.isFunction(onConferenceInfoUpdate) && this.connection.on('threeWayCallUpdate', onConferenceInfoUpdate);
         this.eventHandler();
         this.initial();
     }
@@ -203,12 +208,14 @@ class PhoneBar extends EventEmitter {
         this.connection.on(MessageID.EventThreeWayEstablished.toString(), (data) => {
             this.threewayCallData.push({'phoneNumber': data.otherDN, 'callID': data.callID});
             !this.threewayCallBox || this.threewayCallBox.join(data.otherDN, data.callID);
+            this.connection.emit('threeWayCallUpdate', this.threewayCallData);
         });
         // 三方通话挂单
         this.connection.on(MessageID.EventThreeWayReleased.toString(), (data) => {
             this.threewayCallData = this.threewayCallData.filter((v) => v.phoneNumber !== data.otherDN);
             !this.threewayCallBox || this.threewayCallBox.remove(data.otherDN);
             utils.showMessage(`${data.otherDN} 已退出会议`);
+            this.connection.emit('threeWayCallUpdate', this.threewayCallData);
         });
         // 转接菜单列表事件
         this.connection.on(MessageID.EventTransferMenuList.toString(), (data) => {
@@ -250,7 +257,6 @@ class PhoneBar extends EventEmitter {
         // 需要转接的座席信息
         this.connection.on(MessageID.CrmTransferAgentInfo.toString(), (data) => {
             this.connection.emit('transferAgentListUpdate', data);
-            // utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
         });
 
         // 班组列表
@@ -263,11 +269,10 @@ class PhoneBar extends EventEmitter {
             this.connection.emit('queueListUpdate', data);
         });
 
-        // 会议信息
+        // 会议内的待邀请坐席数据
         this.connection.on(MessageID.CrmConferenceAgentInfo.toString(), (data) => {
-            this.connection.emit('conferenceInfo', data);
+            this.connection.emit('conferenceAgentInfoUpdate', data);
         });
-
 
         // 监听座席状态定时器
         this.agent.stateTimer.on('change', (seconds, timerValue) => {
@@ -587,28 +592,32 @@ class PhoneBar extends EventEmitter {
     /**
      * 转接事件处理
      * @param type 转接类型
-     * @param id 转接id或号码
+     * @param idOrNumber 转接id或号码
      */
-    transferHandler(type, id) {
+    transferHandler(type, idOrNumber) {
         switch (type) {
-            case "outside": // 转外线号码
-                this._transferThis(id);
+            case "outside": // 转外线号码-咨询
+                this._transferThis(idOrNumber);
                 break;
 
             case "group": // 转技能组
-                this.agentApi.singleStepTransfer(id);
+                this.agentApi.singleStepTransfer(idOrNumber);
                 break;
 
             case "ivr": // 转IVR
-                this.agentApi.singleStepTransfer(`ivr_${id}`);
+                this.agentApi.singleStepTransfer(`ivr_${idOrNumber}`);
                 break;
 
             case "key": // 转按键采集
-                this.agentApi.digitCollections(id);
+                this.agentApi.digitCollections(idOrNumber);
                 break;
 
             case "satisfaction": // 转满意度
-                this.agentApi.singleStepTransfer(`icp_${id}`);
+                this.agentApi.singleStepTransfer(`icp_${idOrNumber}`);
+                break;
+
+            case "agent": // 转坐席
+                this.agentApi.consult(idOrNumber);
                 break;
         }
     }
@@ -802,13 +811,13 @@ class PhoneBar extends EventEmitter {
     }
 
     /**
-     * 请求会议数据
+     * 请求会议内的待邀请坐席数据
      * @param limitAgent 查询座席名字或账号
      * @param state 查询状态
      * @param queueCode 查询技能组
      * @param grpStreamNumber 查询班组
      */
-    requestConferenceData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
+    requestConferenceAgentData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
         const data = {
             "messageId": 3509,
             "thisDN": this.agent.thisDN,

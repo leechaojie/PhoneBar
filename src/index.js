@@ -37,11 +37,12 @@ class PhoneBar extends EventEmitter {
      * @param isPhoneTakeAlong  是否手机随行，即手机在线，默认为false
      * @param workPhone  随行手机号
      * @param autoAnswer  自动应答
-     * @param customNotReadyReason  自定义坐席状态
+     * @param customState  自定义坐席状态
      * @param onScreenPopup 弹屏事件
      * @param onRinging  呼入振铃事件
      * @param onTalking  接通事件
      * @param onHangup  挂机事件
+     * @param onQueueUpdate 坐席队列更新事件
      * @param onAgentStatusChange 坐席状态变更事件
      * @param onLinkDisconnected 连接被服务器断开事件
      * @param onUserInputCompleted 用户输入完成事件
@@ -69,19 +70,20 @@ class PhoneBar extends EventEmitter {
                     workPhone = '',
                     autoAnswer = false,
                     
-                    customNotReadyReason = [],
+                    customState = [],
 
                     onScreenPopup,
                     onRinging,
                     onTalking,
                     onHangup,
+                    onQueueUpdate,
                     onAgentStatusChange,
                     onLinkDisconnected,
                     onUserInputCompleted
                 }) {
         super();
         let options = this.options = arguments[0];
-        options.customNotReadyReason = customNotReadyReason;
+        options.customState = customState;
 
         // 初始化线路信息
         this.linePool = new LinePool();
@@ -90,7 +92,7 @@ class PhoneBar extends EventEmitter {
         // 初始化坐席数据
         this.agent = new Agent(options);
         // 初始化坐席自定义状态
-        Agent.setCustomNotReadyReason(options.customNotReadyReason);
+        Agent.setCustomState(options.customState);
 
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
@@ -142,6 +144,7 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onRinging) && this.on('ringing', onRinging);
         utils.isFunction(onTalking) && this.on('talking', onTalking);
         utils.isFunction(onHangup) && this.on('hangup', onHangup);
+        utils.isFunction(onQueueUpdate) && this.connection.on('eventQueued', onQueueUpdate);
         utils.isFunction(onAgentStatusChange) && this.agent.on('agentStateChange', onAgentStatusChange);
         utils.isFunction(onLinkDisconnected) && this.connection.on('linkDisconnected', onLinkDisconnected);
         utils.isFunction(onUserInputCompleted) && this.connection.on('userInputCompleted', onUserInputCompleted);
@@ -389,33 +392,34 @@ class PhoneBar extends EventEmitter {
                 this.agentApi.agentNotReady(3);
                 break;
 
-            case 'resting':
+            case 'rest':
                 this.agentApi.agentNotReady(5);
                 break;
 
-            case 'reason11':
+            case 'reason1':
                 this.agentApi.agentNotReady(11);
                 break;
 
-            case 'reason12':
+            case 'reason2':
                 this.agentApi.agentNotReady(12);
                 break;
 
-            case 'reason13':
+            case 'reason3':
                 this.agentApi.agentNotReady(13);
                 break;
 
-            case 'reason14':
+            case 'reason4':
                 this.agentApi.agentNotReady(14);
                 break;
 
-            case 'reason15':
+            case 'reason5':
                 this.agentApi.agentNotReady(15);
                 break;
 
-            case 'reason17':
+            case 'reason7':
                 this.agentApi.agentNotReady(17);
                 break;
+
         }
 
     }

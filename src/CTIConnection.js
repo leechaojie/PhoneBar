@@ -199,6 +199,8 @@ class CTIConnection extends WebSocketBaseClient {
             } else {
                 utils.showMessage("与服务器的连接已断开!");
             }
+        } else if (data.messageId === MessageID.EventQueued) {
+            this.emit('eventQueued', data)
         }
     }
 

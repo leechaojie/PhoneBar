@@ -48,16 +48,20 @@ const initPhoneBar = () => {
     autoIdleWhenLogin: false,
     isPhoneTakeAlong: false,
 
-    // 还可以自定义坐席状态名称
-    customNotReadyReason: [
-        {code: 3, name:'示忙1'},
-        {code: 5, name:'休息0'},
-        {code: 11, name:'自1'},
-        {code: 12, name:'自2'},
-        {code: 13, name:'自3'},
-        {code: 14, name:'自4'},
-        {code: 15, name:'自5'},
-        {code: 17, name:'自7'},
+    // 根据坐席状态自定义名称以及颜色，并且扩展自己的状态
+    customState: [
+      // 修改状态名称以及颜色
+      {code: -3, name:'就绪', color: 'pink'},
+      {code: 3, name:'示忙', color: 'pink'},
+      {code: 5, name:'休息', color: 'pink'},
+
+      // 扩展的状态
+      {code: 11, name:'扩展1', color: 'pink'},
+      {code: 12, name:'扩展2', color: 'pink'},
+      {code: 13, name:'扩展3', color: 'pink'},
+      {code: 14, name:'扩展4', color: 'pink'},
+      {code: 15, name:'扩展5', color: 'pink'},
+      {code: 17, name:'扩展7', color: 'pink'},
     ],
 
     onAgentStatusChange: function (newState: string, beforeValue: string) {
@@ -78,6 +82,10 @@ const initPhoneBar = () => {
 
     onHangup: function (callInfo: IObject) {
       console.log("挂机事件：", callInfo);
+    },
+
+    onQueueUpdate: function (queueInfo: IObject) {
+      console.log("坐席队列更新事件", queueInfo);
     },
 
     onLinkDisconnected: function () {

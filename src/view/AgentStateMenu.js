@@ -28,17 +28,24 @@ class AgentStateMenu extends EventEmitter {
         * */
         this.actionList = [];
         const predefinedMenu = [
-            { name: '离线', value: 'logout', visible: false },
-            { name: '登入', value: 'login', visible: true }
+            { name: '离线', value: 'logout', visible: false, color: '#a1a2a2' },
+            { name: '登入', value: 'login', visible: true, color: '#f8ac59' },
         ]
 
         // 组装下拉菜单
-        for (let stateKey in Agent.stateDict) {
-            if (Agent.allowModifyStates .includes(stateKey)) {
-                this.actionList.push({ name: Agent.stateDict[stateKey].name, value: stateKey, 'visible': true});
+        for (const stateKey in Agent.stateDict) {
+            if (Agent.allowModifyStates.includes(stateKey)) {
+                const item = {
+                    name: Agent.stateDict[stateKey].name,
+                    value: stateKey === 'offline' ? 'logout' : stateKey,
+                    visible: stateKey === 'offline' ? false : true,
+                    color: Agent.stateDict[stateKey].color ? Agent.stateDict[stateKey].color : ''
+                }
+                this.actionList.push(item);
             }
+
         }
-    
+
         this.actionList.push(...predefinedMenu);
 
         this._visible = visible;
@@ -94,7 +101,8 @@ class AgentStateMenu extends EventEmitter {
 
         this._actionElementMap = {};
         this.actionList.forEach((action) => {
-            let menu = document.createElement('li');
+            const menu = document.createElement('li');
+            menu.id = action.value
             // 默认是否显示
             if (!action.visible) {
                 menu.style.display = 'none';
@@ -104,6 +112,9 @@ class AgentStateMenu extends EventEmitter {
 
             let icon = document.createElement('i');
             icon.className = action.value;
+            if (action.color) {
+                icon.style.background = action.color;
+            }
             let textSpan = document.createElement('span');
             textSpan.innerText = action.name;
 
@@ -145,9 +156,9 @@ class AgentStateMenu extends EventEmitter {
         this._selectedState = state;
 
         // 自定义状态设置为 rest
-        const customState = ['reason11', 'reason12', 'reason13', 'reason14', 'reason15', 'reason17'];
+        const customState = ['reason1', 'reason2', 'reason3', 'reason4', 'reason5', 'reason7'];
         if (customState.includes(state)) {
-            this.agentStateIcon.className = `agentstate-resting`;
+            this.agentStateIcon.className = `agentstate-rest`;
         } else {
             this.agentStateIcon.className = `agentstate-${state}`;
         }

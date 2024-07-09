@@ -1,11 +1,29 @@
 /// <reference lib="dom"/>
+import AgentApi from "./types/agentApi";
+import PhoneBarButton from "./types/phoneBarButton";
+import { IObject, CustomState, ComponentName } from "./types/interface";
 
-interface IObject<T = any> {
-  [key: string]: T;
-}
 
 declare class PhoneBar {
   constructor(options: PhoneBar.Options);
+
+  /**
+   * 属性配置
+   */
+  readonly options: PhoneBar.Options;
+
+  /**
+   * AgentApi对象
+   * @readonly
+   * 此对象用于调用AgentApi接口
+   */
+  readonly agentApi: AgentApi;
+
+  /**
+   * 根据名称获取组件
+   * @param {ComponentName} componentName 按钮名称
+   */
+  getComponent(componentName: ComponentName): PhoneBarButton | null;
 
   /**
    * 销毁组件
@@ -35,40 +53,6 @@ declare class PhoneBar {
 }
 
 declare namespace PhoneBar {
-  /**
-   * 需要修改的坐席状态码
-   */
-  type AllowedCustomNotReadyReasonCodes  = 3 | 5 | 11 | 12 | 13 | 14 | 15 | 17;
-
-
-  /**
-   * 自定义定义未就绪状态名称
-   * @property {AllowedCode} code - 需要修改的code码:
-   * @property {string} name - 对应的状态名称
-   */
-  interface CustomNotReadyReason {
-
-    /**
-     * 状态码
-     * 只能使用以下值: 2, 5, 11, 12, 13, 14, 15, 17
-     * @property {3} - 示忙
-     * @property {5}- 休息
-     * @property {11} - 自定义1
-     * @property {12} - 自定义2
-     * @property {13} - 自定义3
-     * @property {14} - 自定义4
-     * @property {15} - 自定义5
-     * @property {17} - 自定义7
-     */
-    code: AllowedCustomNotReadyReasonCodes;
-
-    /**
-     * 状态名称
-     * 可以任意修改
-     */
-    name: string;
-  }
-
   interface Options {
     /**
      * 渲染容器
@@ -179,6 +163,7 @@ declare namespace PhoneBar {
     /**
      * 自定义状态 
      * 可修改状态名称，以及扩展自定义状态
+     * @property {-3} - 就绪
      * @property {3} - 示忙
      * @property {5}- 休息
      * @property {11} - 自定义1
@@ -188,45 +173,51 @@ declare namespace PhoneBar {
      * @property {15} - 自定义5
      * @property {17} - 自定义7
      */
-    customNotReadyReason?: CustomNotReadyReason[];
+    customState?: CustomState[];
 
     /**
      * 坐席状态变更事件
      * @param newState 坐席当前状态值
      * @param beforeValue 变更前的状态值
      */
-    onAgentStatusChange?(newState: string, beforeValue: string): void;
+    onAgentStatusChange?:(newState: string, beforeValue: string) => void;
 
     /**
      * 弹屏事件
      * @param lineState 当前线路状态值
      * @param callInfo 通话信息
      */
-    onScreenPopup?(lineState: string, callInfo: IObject): void;
+    onScreenPopup?: (lineState: string, callInfo: IObject) => void;
 
     /**
      * 振铃事件
      * @param callInfo 通话信息
      */
-    onRinging?(callInfo: IObject): void;
+    onRinging?: (callInfo: IObject) => void;
 
     /**
      * 接通事件
      * @param callInfo 通话信息
      */
-    onTalking?(callInfo: IObject): void;
+    onTalking?: (callInfo: IObject) => void;
 
     /**
      * 挂机事件
      * @param callInfo 通话信息
      */
-    onHangup?(callInfo: IObject): void;
+    onHangup?: (callInfo: IObject) => void;
+
+    /**
+     * 坐席排队信息更新事件
+     * @param {Object} queueInfo 坐席排队信息
+     */
+    onQueueUpdate?: (queueInfo: IObject) => void;
 
     /**
      * 连接被服务器断开事件
      * @param callInfo 通话信息
      */
-    onLinkDisconnected?(callInfo: IObject): void;
+    onLinkDisconnected?: (callInfo: IObject) => void;
   }
 }
 

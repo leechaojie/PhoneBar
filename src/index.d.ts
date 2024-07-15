@@ -1,6 +1,7 @@
 /// <reference lib="dom"/>
 
 import AgentApi from "./types/agentApi";
+import CTIConnection from "./types/CTIConnection";
 import PhoneBarButton from "./types/phoneBarButton";
 import { IObject, CustomNotReadyReason, ComponentName } from "./types/interface";
 
@@ -13,11 +14,18 @@ declare class PhoneBar {
   readonly options: PhoneBar.Options;
 
   /**
-   * AgentApi对象
+   * AgentApi 对象
    * @readonly
-   * 此对象用于调用AgentApi接口
+   * 此对象用于调用 AgentApi 接口
    */
   readonly agentApi: AgentApi;
+
+  /**
+   * CTIConnection 对象
+   * @readonly
+   * 此对象用于调用 CTIConnection 接口
+   */
+  readonly connection: CTIConnection;
 
   /**
    * 根据名称获取组件

@@ -95,6 +95,7 @@ class PhoneBar extends EventEmitter {
                     onTransferAgentListUpdate,
                     onConferenceAgentInfoUpdate,
                     onConferenceInfoUpdate,
+                    onConferenceMemberUpdate,
                     onTransferClick,
                     onConferenceClick,
                     onQueueUpdate,
@@ -168,6 +169,7 @@ class PhoneBar extends EventEmitter {
             this.connection.emit('threeWayCallUpdate', this.threewayCallData);
             this.requestQueueList()
             this.requestConferenceAgentData()
+            this.requestCrm4ConferenceMember()
         });
         this.getComponent('conference').on('itemClick', this.onConferenceItemClick.bind(this));
 
@@ -196,6 +198,7 @@ class PhoneBar extends EventEmitter {
         utils.isFunction(onTransferClick) && this.on('transferClick', onTransferClick);
         utils.isFunction(onConferenceClick) && this.on('conferenceClick', onConferenceClick);
         utils.isFunction(onConferenceInfoUpdate) && this.connection.on('threeWayCallUpdate', onConferenceInfoUpdate);
+        utils.isFunction(onConferenceMemberUpdate) && this.connection.on('conferenceMemberUpdate', onConferenceMemberUpdate);
         this.eventHandler();
         this.initial();
     }
@@ -272,6 +275,11 @@ class PhoneBar extends EventEmitter {
         // 会议内的待邀请坐席数据
         this.connection.on(MessageID.CrmConferenceAgentInfo.toString(), (data) => {
             this.connection.emit('conferenceAgentInfoUpdate', data);
+        });
+        
+        // 会议成员更新
+        this.connection.on(MessageID.CrmConferenceMemberList.toString(), (data) => {
+            this.connection.emit('conferenceMemberUpdate', data);
         });
 
         // 监听座席状态定时器
@@ -828,6 +836,21 @@ class PhoneBar extends EventEmitter {
             grpStreamNumber
         };
         this.connection.send(data);
+    }
+
+    /**
+     * 请求获取会议成员
+     */
+    requestCrm4ConferenceMember() {
+        console.log('请求获取会议成员', this.agentApi.linePool.getCurrentLine().callId);
+        const data = {
+            "messageId": 3511,
+            "thisDN": this.agent.thisDN,
+            "agentID": this.agent.agentID,
+            "callId": this.agentApi.linePool.getCurrentLine().callId
+        };
+        this.connection.send(data);
+
     }
 
     /**

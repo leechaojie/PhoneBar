@@ -242,7 +242,7 @@ class PhoneBar extends EventEmitter {
             }
             if (this.agentConfig.autoIdleWhenAfterWork) {
                 if (data.maxAfterworkTime === 0) {
-                    utils.showMessage('企业未启用自动就绪，如需开启请联系管理员！');
+                    // utils.showMessage('企业未启用自动就绪，如需开启请联系管理员！');
                 } else {
                     this.agentConfig.maxAfterWorkTime = data.maxAfterworkTime;
                 }

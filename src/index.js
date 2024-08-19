@@ -521,18 +521,58 @@ class PhoneBar extends EventEmitter {
 
     /**
      * 主动拨打呼叫
+     * @param {string | object} options - 号码或包含参数的对象
+     * @returns {boolean}
      */
-    makeCall(phoneNumber) {
+    makeCall(options) {
+        let phoneNumber, id, type, module, call_id, queue, newTransPara, taskId, numberId;
+
+        // 处理参数
+        if (typeof options === 'string') {
+            phoneNumber = options;
+            // 设置默认值
+            id = -1;
+            type = /(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3;
+            module = null;
+            call_id = null;
+            queue = this.agent.defaultQueue;
+            newTransPara = null;
+            taskId = null;
+            numberId = null;
+        } else if (typeof options === 'object') {
+            // 从对象中获取参数，并设置默认值
+            phoneNumber = options.number;
+            id = options.id || -1;
+            type = options.type || (/(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3);
+            module = options.module || null;
+            call_id = options.call_id || null;
+            queue = options.queue || this.agent.defaultQueue;
+            newTransPara = options.newTransPara || null;
+            taskId = options.taskId || null;
+            numberId = options.numberId || null;
+        } else {
+            console.error("Invalid input type for makeCallWrapper. Expected string or object.");
+            return false;
+        }
+
+        // 处理号码
         phoneNumber = phoneNumber || this.dialPad.getPhoneNumber();
-        if (phoneNumber.length == 4 && this.agent.tid !== '0') {
-            if(this.agent.tid.length==5){
-                phoneNumber=this.agent.tid+phoneNumber;
+        if (phoneNumber.length === 4 && this.agent.tid !== '0') {
+            if (this.agent.tid.length === 5) {
+                phoneNumber = this.agent.tid + phoneNumber;
             } else {
                 phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
             }
         }
-        let type = /(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3;
-        this.agentApi.makeCall(phoneNumber, -1, type, null, null, this.agent.defaultQueue);
+
+        // 参数校验，号码不能为空
+        if (!phoneNumber) {
+            console.error("Phone number is required.");
+            return false;
+        }
+
+        // 调用底层的makeCall
+        return this.agentApi.makeCall(phoneNumber, id, type, module, call_id, queue, newTransPara, taskId, numberId);
     }
 
     /**

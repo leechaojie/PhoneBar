@@ -405,6 +405,11 @@ declare namespace PhoneBar {
     onConferenceInfoUpdate?: (data: IObject[]) => void;
 
     /**
+     * 会议成员更新事件
+     */
+    onConferenceMemberUpdate?: (data: IObject) => void;
+
+    /**
      * 坐席排队信息更新事件
      * @param {Object} queueInfo 坐席排队信息
      */

@@ -95,6 +95,8 @@ export const MessageID = {
     CrmQueueList: 3508, // 技能组列表
     RequestCrm4ConferenceAgent: 3509, // 请求会议内的待邀请坐席数据
     CrmConferenceAgentInfo: 3510, // 会议内的待邀请坐席数据
+    RequestCrm4ConferenceMember: 3511, // 请求获取会议成员
+    CrmConferenceMemberList: 3512, // 会议成员列表
     EventTransferMenuList: 3101,
     EventConferenceMenuList: 3102,
     EventAutoReadyConfig: 3103,

@@ -7,7 +7,7 @@ import WebSocketBaseClient from "./WebSocketBaseClient";
 import Agent from "./model/Agent";
 
 /**
- * 基于jWebSocket js库实现与话务平台的websocket通信
+ * 基于Stomp js库实现与话务平台的websocket通信
  * 定义了与消息服务器建立链接、关闭、监听消息（详细见文件中注释部分）.
  * WEB端请求的事件都在此向消息服务器请求，消息服务器返回和推送的事件也在这里处理。
  * @extends WebSocketBaseClient
@@ -15,13 +15,14 @@ import Agent from "./model/Agent";
 class CTIConnection extends WebSocketBaseClient {
 
     /**
-     *
+     * @param client WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
      * @param wsUrl {String}  websocket地址
      * @param agent {Agent}
      * @param agentConfig {AgentConfig}
      * @param linePool {LinePool}
      */
     constructor({
+        client = null,
         wsUrl = 'ws://127.0.0.1:8787/websocket',
         agent,
         agentConfig,
@@ -30,7 +31,7 @@ class CTIConnection extends WebSocketBaseClient {
         username,
         token
     }) {
-        super({ 'url': wsUrl, automaticOpen: false, debug, username, token });
+        super({ client, 'url': wsUrl, automaticOpen: false, debug, username, token });
         this.agent = agent;
         this.linePool = linePool;
         this.agentConfig = agentConfig;

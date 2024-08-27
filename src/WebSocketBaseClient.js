@@ -9,7 +9,11 @@ import SockJS from 'sockjs-client/dist/sockjs.min.js';
  */
 class WebSocketBaseClient extends EventEmitter {
 
+    /**
+     * @param client WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
+     */
     constructor({
+        client = null,
         url = 'ws://127.0.0.1:57712', protocols = [],
         username = '',
         token = '',
@@ -31,7 +35,7 @@ class WebSocketBaseClient extends EventEmitter {
         /** 心跳包时间间隔 */
         this.keepAliveInterval = keepAliveInterval;
 
-        this.client = null;
+        this.client = client;
         this.status = ''
 
         this.debug = debug;
@@ -73,31 +77,7 @@ class WebSocketBaseClient extends EventEmitter {
             this.client.onConnect = (frame) => {
                 Log.log('连接成功');
                 this.onOpen(frame);
-                // 客户端订阅消息的目的地址
-                this.client.subscribe(`/topic/user.${this.username}`, (response) => {
-                    if (response.body === 'ERROR') {
-                        Log.log('订阅失败');
-                    } else if (response.body === 'SUCCESS') {
-                        this.login();
-                    } else {
-                        this.onMessage(response.body);
-                    }
-                    
-                    Log.log(response.body, 'output');
-                });
-
-                // 排队消息订阅
-                this.client.subscribe(`/topic/queue.${this.agent.tid}`, (response) => {
-                    if (response.body === 'ERROR') {
-                        Log.log('排队消息订阅失败');
-                    } else if (response.body === 'SUCCESS') {
-                        Log.log('排队消息订阅成功');
-                    } else {
-                        this.onMessage(response.body);
-                    }
-                    
-                });
-                
+                this.subscribeTopic();
             };
 
             this.client.onWebSocketClose = (frame) => {
@@ -128,7 +108,39 @@ class WebSocketBaseClient extends EventEmitter {
             };
 
             this.client.activate();
+        } else if (!this.client.connected){
+            throw "The stomp client is not conncted !"
+        } else {
+            Log.log('连接成功');
+            this.onOpen();
+            this.subscribeTopic();
         }
+    }
+
+    subscribeTopic() {
+        // 客户端订阅消息的目的地址
+        this.client.subscribe(`/topic/user.${this.username}`, (response) => {
+            if (response.body === 'ERROR') {
+                Log.log('订阅失败');
+            } else if (response.body === 'SUCCESS') {
+                this.login();
+            } else {
+                this.onMessage(response.body);
+            }
+            
+            Log.log(response.body, 'output');
+        });
+
+        // 排队消息订阅
+        this.client.subscribe(`/topic/queue.${this.agent.tid}`, (response) => {
+            if (response.body === 'ERROR') {
+                Log.log('排队消息订阅失败');
+            } else if (response.body === 'SUCCESS') {
+                Log.log('排队消息订阅成功');
+            } else {
+                this.onMessage(response.body);
+            }
+        });
     }
 
     /**

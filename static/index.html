@@ -196,7 +196,7 @@
                     </div>
                     
                     <div>
-                        <input onclick="initPhoneBar();" id="phoneBar" type="button" value=" 创建话条 " />
+                        <input onclick="init();" id="phoneBar" type="button" value=" 创建话条 " />
                         <input onclick="destroy();" type="button" value=" 注销话条 " />
                         <input onclick="emptyLog();" type="button" value=" 清空日志 " />
                     </div>
@@ -216,13 +216,76 @@
     <link href="https://cdn.bootcss.com/layer/2.3/skin/layer.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
     <!-- 新版sdk -->
     <script>
-        
+        var isCommonStompClient = true;
         // 电话条
         var phoneBar = null;
 
-        function initPhoneBar() {
+        function createCommonStompClient() {
+            var stompClient = new StompJs.Client({
+                logRawCommunication: true,
+                debug: function (str) {console.log(str)},
+                reconnectDelay: 4000,
+                heartbeatIncoming: 61000,
+                heartbeatOutgoing: 61000,
+            });
+            stompClient.webSocketFactory = function () {
+                var _options = {transports:["websocket","xhr-polling"]};
+                // IOS系统兼容
+                if (/AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent)) {
+                    _options.transports = ["xhr-polling"];
+                }
+                return new SockJS($("#ccHostIpTxt").val() + '/stomp?access_token='+$("#ctiToken").val(), null, _options);
+            };
+
+            stompClient.onConnect = function (frame) {
+                console.log("连接成功", frame);
+                printLog("连接成功");
+                createPhoneBar(stompClient);
+            };
+            stompClient.onWebSocketClose = function (frame) {
+                console.log("连接断开", frame);
+                if (frame.code === 1002) {
+                    printLog("无法链接到服务器");
+                } else if (frame.code === 2000) {
+                    printLog("token异常或其他原因服务器拒绝了访问");
+                } else {
+                    printLog("连接断开");
+                }
+            }
+            stompClient.onStompError = function (frame) {
+                console.log("Error", frame);
+                printLog("连接失败");
+            };
+            stompClient.onWebSocketError = function (frame) {
+                console.log("Error", frame);
+                printLog("连接失败");
+            };
+            stompClient.onUnhandledMessage = function (frame) {
+                console.log("onUnhandledMessage", frame);
+                printLog("onUnhandledMessage");
+            };
+            stompClient.onUnhandledReceipt = function (frame) {
+                console.log("onUnhandledReceipt", frame);
+                printLog("onUnhandledReceipt");
+            };
+            stompClient.watchForReceipt = function (frame) {
+                console.log("watchForReceipt", frame);
+                printLog("watchForReceipt");
+            };
+            stompClient.onUnhandledFrame = function (frame) {
+                console.log("onUnhandledFrame", frame);
+                printLog("onUnhandledFrame");
+            };
+            
+            stompClient.activate();
+        }
+
+        function init() {
             if (phoneBar) {
                 phoneBar.destroy();
             }
@@ -231,6 +294,14 @@
                 showMessage('token不存在')
             }
 
+            if (isCommonStompClient) {
+                createCommonStompClient();
+            } else {
+                createPhoneBar();
+            }
+        }
+
+        function createPhoneBar(stompClient) {
             var thisQueues = $('#thisQueues').val() ? $('#thisQueues').val().split(',') : [];
             var tid = $("#corpVccIdTxt").val();
             var agentId = '';
@@ -244,6 +315,7 @@
 
             phoneBar = new PhoneBar({
                 renderTo: 'test1',
+                stompClient: stompClient,
                 proxyUrl: $("#ccHostIpTxt").val(),
                 sipServerUrl: $('#sipServerUrl').val(),
                 startupSoftPhone: $('#startupSoftPhone').is(':checked'),
@@ -301,7 +373,7 @@
     </script>
 
     <script type="text/javascript">
-        PhoneBar.Log.log = function (content, msgType) {
+        var printLog = function (content, msgType) {
             var oTextareaInfo = document.getElementById("log");
             if (oTextareaInfo != null) {
                 if (msgType === 'input') {
@@ -333,6 +405,7 @@
             }
 
         }
+        PhoneBar.Log.log = printLog;
 
         function emptyLog() {
             var oTextareaInfo = document.getElementById("log");

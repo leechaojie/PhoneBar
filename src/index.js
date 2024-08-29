@@ -19,6 +19,7 @@ class PhoneBar extends EventEmitter {
     /**
      * 构建电话条及核心业务
      * @param renderTo  页面元素id，渲染到指定元素内，默认追加到body内
+     * @param stompClient Stomp WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
      * @param proxyUrl  坐席代理服务地址
      * @param startupSoftPhone 是否自动启动软电话，如果自动启动必须配置SIP服务地址
      * @param sipServerUrl SIP服务地址
@@ -56,7 +57,9 @@ class PhoneBar extends EventEmitter {
      */
     constructor({
                     renderTo = '',
+                    stompClient = null,
                     proxyUrl = 'ws://127.0.0.1:8787/websocket',
+                    wsClient = null,
                     startupSoftPhone = false,
                     sipServerUrl = '127.0.0.1:5188',
 
@@ -115,6 +118,7 @@ class PhoneBar extends EventEmitter {
 
         // 初始化CTI服务websocket
         this.connection = new CTIConnection({
+            client: stompClient,
             wsUrl: options.proxyUrl,
             debug: options.debug,
             username: options.username,

@@ -521,48 +521,43 @@ class PhoneBar extends EventEmitter {
 
     /**
      * 主动拨打呼叫
-     * @param {string | object} options - 号码或包含参数的对象
+     * @param {string | object } options - 号码或包含参数的对象
      * @returns {boolean}
      */
     makeCall(options) {
-        let phoneNumber, id, type, module, call_id, queue, newTransPara, taskId, numberId;
+        const defaultOptions = {
+            id: -1,
+            type: 3,
+            module: null,
+            call_id: null,
+            queue: this.agent.defaultQueue,
+            newTransPara: null,
+            taskId: null,
+            numberId: null,
+        };
 
-        // 处理参数
+        let phoneNumber;
+
         if (typeof options === 'string') {
             phoneNumber = options;
-            // 设置默认值
-            id = -1;
-            type = /(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3;
-            module = null;
-            call_id = null;
-            queue = this.agent.defaultQueue;
-            newTransPara = null;
-            taskId = null;
-            numberId = null;
-        } else if (typeof options === 'object') {
-            // 从对象中获取参数，并设置默认值
+        } else if (Object.prototype.toString.call(options) === '[object Object]') {
             phoneNumber = options.number;
-            id = options.id || -1;
-            type = options.type || (/(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber) ? 1 : 3);
-            module = options.module || null;
-            call_id = options.call_id || null;
-            queue = options.queue || this.agent.defaultQueue;
-            newTransPara = options.newTransPara || null;
-            taskId = options.taskId || null;
-            numberId = options.numberId || null;
+            Object.assign(defaultOptions, options);
+        } else if (options === null) {
+            phoneNumber = this.dialPad.getPhoneNumber();
         } else {
-            console.error("Invalid input type for makeCallWrapper. Expected string or object.");
+            console.error("Invalid input type for makeCallWrapper. Expected string, object or null.");
             return false;
         }
 
+        // 设置号码类型
+        if (/(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber)) {
+            defaultOptions.type = 1;
+        }
+
         // 处理号码
-        phoneNumber = phoneNumber || this.dialPad.getPhoneNumber();
         if (phoneNumber.length === 4 && this.agent.tid !== '0') {
-            if (this.agent.tid.length === 5) {
-                phoneNumber = this.agent.tid + phoneNumber;
-            } else {
-                phoneNumber = "000002" + this.agent.tid + "08" + phoneNumber;
-            }
+            phoneNumber = this.agent.tid.length === 5 ? this.agent.tid + phoneNumber : "000002" + this.agent.tid + "08" + phoneNumber;
         }
 
         // 参数校验，号码不能为空
@@ -571,8 +566,8 @@ class PhoneBar extends EventEmitter {
             return false;
         }
 
-        // 调用底层的makeCall
-        return this.agentApi.makeCall(phoneNumber, id, type, module, call_id, queue, newTransPara, taskId, numberId);
+        // 调用底层的 makeCall
+        return this.agentApi.makeCall(phoneNumber, ...Object.values(defaultOptions)); 
     }
 
     /**
@@ -817,7 +812,7 @@ class PhoneBar extends EventEmitter {
      * @param queueCode 查询技能组
      * @param grpStreamNumber 查询班组
      */
-    requestTransferAgentData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
+    requestTransferAgentData(limitAgent = '', state = [], queueCode = '', grpStreamNumber = '') {
         // 请求转接坐席数据
         const data = {
             "messageId": 3501,
@@ -865,7 +860,7 @@ class PhoneBar extends EventEmitter {
      * @param queueCode 查询技能组
      * @param grpStreamNumber 查询班组
      */
-    requestConferenceAgentData(limitAgent = '', state = '', queueCode = '', grpStreamNumber = '') {
+    requestConferenceAgentData(limitAgent = '', state = [], queueCode = '', grpStreamNumber = '') {
         const data = {
             "messageId": 3509,
             "thisDN": this.agent.thisDN,

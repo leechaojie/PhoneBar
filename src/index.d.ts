@@ -122,11 +122,11 @@ declare class PhoneBar {
    * 
    * 向 CTI 服务器发送请求
    * @param limitAgent 查询座席名字或账号
-   * @param state 查询状态
+   * @param state 查询状态-可多选
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestTransferAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+  requestTransferAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 请求技能组列表
@@ -144,7 +144,7 @@ declare class PhoneBar {
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestConferenceAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+  requestConferenceAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 销毁组件

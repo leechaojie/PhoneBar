@@ -100,14 +100,14 @@ class AgentApi {
 
     /**
      * 手动拨号
-     * @param dest
-     * @param id
-     * @param type 呼叫类型，参考CALLTYPE常量
-     * @param module  手动回拨
-     * @param call_id  原电话 callId
-     * @param queue
-     * @param newTransPara
-     * @param taskId
+     * @param dest 号码
+     * @param id id
+     * @param type 呼叫类型，参考 CallType 常量
+     * @param module 手动回拨
+     * @param call_id 原电话 callId
+     * @param queue 技能组
+     * @param newTransPara 透明参数
+     * @param taskId 外呼任务id
      * @param numberId
      * @returns {boolean}
      */

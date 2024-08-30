@@ -3,8 +3,13 @@
 import AgentApi from "./types/agentApi";
 import CTIConnection from "./types/CTIConnection";
 import PhoneBarButton from "./types/phoneBarButton";
-import { IObject, CustomNotReadyReason, ComponentName } from "./types/interface";
 import { Client } from "@stomp/stompjs";
+import {
+  IObject,
+  CustomNotReadyReason,
+  ComponentName,
+  MakeCallOptions,
+} from "./types/interface";
 
 declare class PhoneBar {
   constructor(options: PhoneBar.Options);
@@ -34,11 +39,22 @@ declare class PhoneBar {
    */
   getComponent(componentName: ComponentName): PhoneBarButton | null;
 
+
   /**
-   * 主动拨打呼叫
-   * @param {String} number
+   * 主动拨打呼叫 options {@link MakeCallOptions}
+   * @param {string | MakeCallOptions} options - 如果是字符串，则表示电话号码；如果是对象，则包含以下属性：
+   * @param {string} options.number - 电话号码
+   * @param {number} [options.id=-1] - ID
+   * @param {CallType} [options.type] - 呼叫类型，参考 {@link CallType} 常量。默认根据号码自动判断
+   * @param {string | null} [options.module] - 手动回拨
+   * @param {string | null} [options.call_id] - 原电话 callId
+   * @param {string} [options.queue] - 队列。默认为 this.agent.defaultQueue
+   * @param {any} [options.newTransPara] - 透明参数
+   * @param {string | null} [options.taskId] - 外呼任务id
+   * @param {string | null} [options.numberId] - numberId
+   * @returns {boolean} 呼叫是否成功
    */
-  makeCall(number: string): void;
+  makeCall(options: string | MakeCallOptions): boolean;
 
   /**
    * 接听呼叫
@@ -107,11 +123,11 @@ declare class PhoneBar {
    * 
    * 向 CTI 服务器发送请求
    * @param limitAgent 查询座席名字或账号
-   * @param state 查询状态
+   * @param state 查询状态-可多选
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestTransferAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+  requestTransferAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 请求技能组列表
@@ -129,7 +145,7 @@ declare class PhoneBar {
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestConferenceAgentData(limitAgent?: string, state?: string, queueCode?: string, grpStreamNumber?: string): void
+  requestConferenceAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
 
   /**
    * 销毁组件

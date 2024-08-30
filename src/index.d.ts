@@ -4,6 +4,7 @@ import AgentApi from "./types/agentApi";
 import CTIConnection from "./types/CTIConnection";
 import PhoneBarButton from "./types/phoneBarButton";
 import { IObject, CustomNotReadyReason, ComponentName } from "./types/interface";
+import { Client } from "@stomp/stompjs";
 
 declare class PhoneBar {
   constructor(options: PhoneBar.Options);
@@ -204,7 +205,11 @@ declare namespace PhoneBar {
      * 页面元素id，电话条渲染到当前元素内，默认追加到body内。new PhoneBar 前需保证 DOM元素 已存在
      */
     renderTo: string;
-
+    /**
+     * Stomp WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
+     */
+    stompClient: Client;
+    
     /**
      * CTI 服务器地址
      */

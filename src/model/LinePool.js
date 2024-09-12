@@ -1,7 +1,6 @@
 import Line from "./Line";
 import {LineState, CallType, MessageID} from "../constants";
 import EventEmitter from 'eventemitter3';
-import Log from "./utils/Log";
 
 /**
  * 线路池<br/>
@@ -195,7 +194,7 @@ class LinePool extends EventEmitter {
             (event === MessageID.EventDialing && callInfo.callType === CallType.CONSULT)) {
             line = this.getIdleLine();
         }
-        Log.Log("更新线路状态：", this.lines, line, callInfo);
+        console.log(`更新线路状态 ${event}`, JSON.stringify(this.lines), JSON.stringify(line), callInfo);
 
         switch (event) {
             case MessageID.EventReleased:

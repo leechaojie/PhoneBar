@@ -224,7 +224,7 @@ declare namespace PhoneBar {
     /**
      * Stomp WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
      */
-    stompClient: Client;
+    stompClient?: Client;
     
     /**
      * CTI 服务器地址

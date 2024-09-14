@@ -186,6 +186,8 @@ class PhoneBar extends EventEmitter {
         // 会议缓存数据
         this.conferenceData = null;
 
+        this._showDialPad({btnName: '呼叫', show: false});
+
         // 添加监听-------------------
         utils.isFunction(onScreenPopup) && this.on('screenPopup', onScreenPopup);
         utils.isFunction(onRinging) && this.on('ringing', onRinging);
@@ -785,7 +787,8 @@ class PhoneBar extends EventEmitter {
         title = '拨号',
         contacts = [],
         btnName,
-        onDynamicButtonClick = function () { }
+        onDynamicButtonClick = function () { },
+        show = true
     }) {
         // 当存在则先关闭此对话框
         if (this.dialPad) {
@@ -806,7 +809,7 @@ class PhoneBar extends EventEmitter {
                 this.agentApi.releaseCall();
             }
         });
-        this.dialPad.show();
+        if (show) this.dialPad.show();
     }
 
     /**

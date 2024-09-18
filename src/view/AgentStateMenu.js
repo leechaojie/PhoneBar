@@ -99,10 +99,14 @@ class AgentStateMenu extends EventEmitter {
         this.actionList.forEach((action) => {
             const menu = document.createElement('li');
             menu.id = action.value
+
             // 默认是否显示
-            if (!action.visible) {
-                menu.style.display = 'none';
+            let isMenuVisible = action.visible;
+            if (this._selectedState !== Agent.OFFLINE) {
+                isMenuVisible = action.value !== 'login';
             }
+            menu.style.display = isMenuVisible ? 'block' : 'none';
+
             // 选择后不直接更新显示结果，而是触发agentStateSelected事件，由监听控制修改。
             menu.onclick = () => {this.emit('agentStateSelected', action.value);};
 

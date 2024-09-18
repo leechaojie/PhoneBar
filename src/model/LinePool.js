@@ -194,6 +194,11 @@ class LinePool extends EventEmitter {
         //     (event === MessageID.EventDialing && callInfo.callType === CallType.CONSULT)) {
         //     line = this.getIdleLine();
         // }
+
+        // 当咨询时，选择一条空闲线路
+        if (event === MessageID.EventDialing && callInfo.callType === CallType.CONSULT) {
+            line = this.getIdleLine();
+        }
         console.log(`更新线路状态 ${event}`, JSON.stringify(this.lines), JSON.stringify(line), callInfo);
 
         switch (event) {

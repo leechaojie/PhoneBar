@@ -138,6 +138,15 @@
     background-position: -140px -20px
 }
 
+/* 二次拨号 */
+.phonebar-nav .operation .second-dial {
+    background-position: -160px 0
+}
+
+.phonebar-nav .operation.disabled .second-dial {
+    background-position: -160px -20px
+}
+
 .phonebar-nav .operation_text {
     display: block;
     min-width: 35px;

@@ -78,6 +78,12 @@ class PhoneBarComponent extends EventEmitter {
                     iconClassName: 'conference',
                     customMethods: this._onConferenceClick
                 }), 'sort': 9
+            },
+            {
+                'name': 'secondDial', 'component': new MultilevelMenu({
+                    title: '二次拨号',
+                    iconClassName: 'second-dial',
+                }), 'sort': 10
             }
         ];
 
@@ -128,6 +134,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -143,6 +150,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -158,6 +166,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -173,6 +182,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -188,6 +198,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -203,6 +214,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**
@@ -218,6 +230,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
         if (callType === CallType.PREDICT || callType === CallType.MONITOR) {
             this.getButtonComponent("answer").enable();
         } else {
@@ -247,6 +260,7 @@ class PhoneBarComponent extends EventEmitter {
             this.getButtonComponent("conference").disable();
         } else {
             this.getButtonComponent("transfer").enable();
+            this.getButtonComponent("secondDial").enable();
         }
     };
 
@@ -263,6 +277,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     };
 
     /**
@@ -278,6 +293,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     };
 
     /**
@@ -293,6 +309,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").enable();
         this.getButtonComponent("conference").disable();
+        this.getButtonComponent("secondDial").disable();
     }
 
     /**

@@ -669,7 +669,7 @@ class AgentApi {
                 "messageId": 227,
                 "thisDN": this.agent.thisDN,
                 "agentID": this.agent.agentID,
-                "ivrID": ivr_id,
+                "ivrId": ivr_id,
                 "state": "begin",
                 "callID": line.callId
             };

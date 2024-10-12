@@ -36,7 +36,8 @@ class WebSocketBaseClient extends EventEmitter {
         this.keepAliveInterval = keepAliveInterval;
 
         this.client = client;
-        this.status = ''
+        this.status = '';
+        this.subscribedTopics = [];
 
         this.debug = debug;
 
@@ -77,7 +78,8 @@ class WebSocketBaseClient extends EventEmitter {
             this.client.onConnect = (frame) => {
                 Log.log('连接成功');
                 this.onOpen(frame);
-                this.subscribeTopic();
+                this.subscribeUserTopic();
+                this.subscribeQueueTopic();
             };
 
             this.client.onWebSocketClose = (frame) => {
@@ -95,6 +97,8 @@ class WebSocketBaseClient extends EventEmitter {
                         Log.log("连接断开")
                         break;
                 }
+                // 清空已订阅的广播地址缓存
+                this.subscribedTopics = [];
             }
 
             this.client.onStompError = (frame) => {
@@ -113,13 +117,16 @@ class WebSocketBaseClient extends EventEmitter {
         } else {
             Log.log('连接成功');
             this.onOpen();
-            this.subscribeTopic();
+            this.subscribeUserTopic();
+            this.subscribeQueueTopic();
         }
     }
 
-    subscribeTopic() {
-        // 客户端订阅消息的目的地址
-        this.client.subscribe(`/topic/user.${this.username}`, (response) => {
+    /**
+     * 用户消息订阅
+     */
+    subscribeUserTopic() {
+        this.subscribeTopic(`/topic/user.${this.username}`, (response) => {
             if (response.body === 'ERROR') {
                 Log.log('订阅失败');
             } else if (response.body === 'SUCCESS') {
@@ -130,9 +137,13 @@ class WebSocketBaseClient extends EventEmitter {
             
             Log.log(response.body, 'output');
         });
+    }
 
-        // 排队消息订阅
-        this.client.subscribe(`/topic/queue.${this.agent.tid}`, (response) => {
+    /**
+     * 排队消息订阅
+     */
+    subscribeQueueTopic() {
+        this.subscribeTopic(`/topic/queue.${this.agent.tid}`, (response) => {
             if (response.body === 'ERROR') {
                 Log.log('排队消息订阅失败');
             } else if (response.body === 'SUCCESS') {
@@ -141,6 +152,45 @@ class WebSocketBaseClient extends EventEmitter {
                 this.onMessage(response.body);
             }
         });
+    }
+
+    /**
+     * 必须添加前缀 '/topic/'
+     * @param path
+     * @param callback
+     */
+    subscribeTopic(path, callback) {
+        // 防止重复订阅
+        for (let i = 0,len=this.subscribedTopics.length; i < len; i++) {
+            var _obj = this.subscribedTopics[i];
+            if (_obj.path === path) {
+                Log.log(`${path} 地址重复订阅`);
+                return;
+            }
+        }
+
+        let subscription = this.client.subscribe(path, function (message) {
+            callback && callback(message);
+        });
+        this.subscribedTopics.push({
+            path: path,
+            subscription: subscription
+        });
+    }
+
+    /**
+     * 取消订阅
+     * @param topic
+     */
+    unsubscribeTopic(topic) {
+        for (let i = 0,len=this.subscribedTopics.length; i < len; i++) {
+            let _obj = this.subscribedTopics[i];
+            if (_obj.path === topic) {
+                _obj.subscription.unsubscribe();
+                this.subscribedTopics.splice(i ,1);
+                return;
+            }
+        }
     }
 
     /**

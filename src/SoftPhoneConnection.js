@@ -116,10 +116,14 @@ class SoftPhoneConnection extends EventEmitter {
         if (token.action === 'ping') {
             this.pingcount = 0;
         } else if (token.action === 'login') {
-            if (this.username === token.data.user && token.data.result === 1) {
-                this.sessionid = token.data.sid;
-                this.startPing();
-                this.emit('loginSuccess', token);
+            // 登录成功消息判断
+            if (this.username === token.data.user  && token.data.result === 1) {
+                // 因软电话会定期返回login消息，判读当前sessionid已经存在或者不相等时才会触发登录事件
+                if(this.sessionid !== token.data.sid) {
+                    this.sessionid = token.data.sid;
+                    this.startPing();
+                    this.emit('loginSuccess', token);
+                }
             } else {
                 utils.showMessage("软电话注册失败！");
             }

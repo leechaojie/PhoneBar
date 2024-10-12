@@ -185,10 +185,8 @@ class LinePool extends EventEmitter {
         let event = data.messageId;
         let callInfo = this.parseCallInfo(data);
 
-        let line = this.getLineByCallId(callInfo.callId);
-        if (!line) {
-            line = this.getCurrentLine();
-        }
+        let line = this.getLineByCallId(callInfo.callId) || this.getCurrentLine();
+
         // 当呼入振铃或者咨询时，选择一条空闲线路
         // if (event === MessageID.EventRinging ||
         //     (event === MessageID.EventDialing && callInfo.callType === CallType.CONSULT)) {
@@ -201,41 +199,46 @@ class LinePool extends EventEmitter {
         }
         console.log(`更新线路状态 ${event}`, JSON.stringify(this.lines), JSON.stringify(line), callInfo);
 
-        switch (event) {
-            case MessageID.EventReleased:
-            case MessageID.EventAbandoned:
-                line.reset();
-                break;
-            case MessageID.EventDialing:
-                line.lineState = LineState.DIALING;
-                line.phoneNumber = callInfo.phoneNumber;
-                line.callType = callInfo.callType;
-                line.callId = callInfo.callId;
-                break;
-            case MessageID.EventRinging:
-                line.lineState = LineState.RINGING;
-                line.phoneNumber = callInfo.phoneNumber;
-                line.callType = callInfo.callType;
-                line.callId = callInfo.callId;
-                break;
-            case MessageID.EventEstablished:
-                if (callInfo.callId == null || callInfo.callId === '') break;
-                line.lineState = LineState.TALKING;
-                line.phoneNumber = callInfo.phoneNumber;
-                line.callType = callInfo.callType;
-                line.callId = callInfo.callId;
-                line.parties = [callInfo.phoneNumber];
-                break;
-            case MessageID.EventHeld:
-                line.lineState = LineState.HELD;
-                break;
-            case MessageID.EventRetrieved:
-                line.lineState = LineState.TALKING;
-                break;
-            default:
-                break;
+        try {
+            switch (event) {
+                case MessageID.EventReleased:
+                case MessageID.EventAbandoned:
+                    line.reset();
+                    break;
+                case MessageID.EventDialing:
+                    line.lineState = LineState.DIALING;
+                    line.phoneNumber = callInfo.phoneNumber;
+                    line.callType = callInfo.callType;
+                    line.callId = callInfo.callId;
+                    break;
+                case MessageID.EventRinging:
+                    line.lineState = LineState.RINGING;
+                    line.phoneNumber = callInfo.phoneNumber;
+                    line.callType = callInfo.callType;
+                    line.callId = callInfo.callId;
+                    break;
+                case MessageID.EventEstablished:
+                    if (callInfo.callId == null || callInfo.callId === '') break;
+                    line.lineState = LineState.TALKING;
+                    line.phoneNumber = callInfo.phoneNumber;
+                    line.callType = callInfo.callType;
+                    line.callId = callInfo.callId;
+                    line.parties = [callInfo.phoneNumber];
+                    break;
+                case MessageID.EventHeld:
+                    line.lineState = LineState.HELD;
+                    break;
+                case MessageID.EventRetrieved:
+                    line.lineState = LineState.TALKING;
+                    break;
+                default:
+                    break;
+            }
+            this.emit('lineDataChange', line, callInfo, data);
+        } catch (e) {
+            console.log(e);
         }
-        this.emit('lineDataChange', line, callInfo, data);
+        
     }
 
     parseCallInfo(data) {
@@ -252,6 +255,8 @@ class LinePool extends EventEmitter {
 
         let talkSec = data.talkSec || 0;
 
+        const otherDN = data.otherDN || '';
+
         return {
             callId,
             callType,
@@ -263,6 +268,7 @@ class LinePool extends EventEmitter {
             callSid,
             cityCode,
             talkSec,
+            otherDN,
         };
     }
 

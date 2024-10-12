@@ -229,7 +229,7 @@ class PhoneBar extends EventEmitter {
         this.connection.on(MessageID.EventThreeWayReleased.toString(), (data) => {
             this.threewayCallData = this.threewayCallData.filter((v) => v.phoneNumber !== data.otherDN);
             !this.threewayCallBox || this.threewayCallBox.remove(data.otherDN);
-            utils.showMessage(`${data.otherDN} 已退出会议`);
+            utils.showMessage(`${data.otherName || data.otherDN} 已退出会议`);
             this.connection.emit('threeWayCallUpdate', this.threewayCallData);
         });
         // 转接菜单列表事件

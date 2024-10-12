@@ -95,7 +95,6 @@ class CTIConnection extends WebSocketBaseClient {
     }
 
     doClose() {
-        this.stopKeepAlive();
         if (this.isOpened()) {
             this.close();
         }
@@ -118,26 +117,7 @@ class CTIConnection extends WebSocketBaseClient {
         }
     }
 
-    /**
-     * 覆写父类方法，当startKeepAlive时会默认调用此方法
-     */
-    ping() {
-        if(this.isOpened()) {
-            this.sendMessage({
-                type: "ping",
-                thisDN: this.agent.thisDN,
-                agentID: this.agent.agentID,
-                message: ""
-            });
-        }
-    }
-
-    onClose(event) {
-        this.stopKeepAlive();
-    }
-
     onOpen(event) {
-        this.startKeepAlive(false);
         //登录成功，且不在通话中，自动置闲(服务器响应为5S)
         if (this.agentConfig.autoIdleWhenLogin) {
             window.setTimeout(() => {
@@ -148,13 +128,6 @@ class CTIConnection extends WebSocketBaseClient {
                 }
             }, 5000);
         }
-
-        // this.sendMessage({
-        //     type:"welcome",
-        //     thisDN:"",
-        //     agentID: "",
-        //     message:""
-        // });
     }
 
     /**

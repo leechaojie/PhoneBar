@@ -27,8 +27,8 @@ class AgentStateMenu extends EventEmitter {
         * */
         this.actionList = [];
         const predefinedMenu = [
-            { name: '离线', value: 'logout', visible: false, color: '#f8ac59' },
-            { name: '登入', value: 'login', visible: true, color: '#f8ac59' }
+            { name: '离线', value: 'logout', visible: false },
+            { name: '登入', value: 'login', visible: true }
         ]
         // 组装下拉菜单
         for (const stateKey in Agent.stateDict) {

@@ -240,9 +240,12 @@
     background: #23c6c8;
 }
 
-.phonebar-nav .dropdown-menu i.login,
-i.logout {
+.phonebar-nav .dropdown-menu i.login {
     background: #f8ac59;
+}
+
+.phonebar-nav .dropdown-menu i.logout {
+    background: #999999;
 }
 
 .phonebar-nav .dropdown-menu i.reason1 {

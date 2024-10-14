@@ -246,7 +246,7 @@ Agent.stateDict = {
     [Agent.OFFLINE]: {name: '离线', rawState: AgentState.OFFLINE, reason: NotReadyReason.UNKNOWN},
     [Agent.READY]: {name: '就绪', rawState: AgentState.READY, reason: NotReadyReason.UNKNOWN},
     [Agent.BUSY]: {name: '示忙', rawState: AgentState.NOTREADY, reason: NotReadyReason.BUSY},
-    [Agent.REST]: {name: '休息中', rawState: AgentState.NOTREADY, reason: NotReadyReason.REST},
+    [Agent.REST]: {name: '休息', rawState: AgentState.NOTREADY, reason: NotReadyReason.REST},
     [Agent.NEATENING]: {name: '整理中', rawState: AgentState.NOTREADY, reason: NotReadyReason.NEATENING},
     [Agent.TALKING]: {name: '通话中', rawState: AgentState.NOTREADY, reason: NotReadyReason.TALKING},
     [Agent.RINGING]: {name: '振铃中', rawState: AgentState.NOTREADY, reason: NotReadyReason.RINGING},

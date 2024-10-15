@@ -4,91 +4,85 @@ import EventEmitter from "eventemitter3";
  * 定时器
  */
 class Timer extends EventEmitter {
-
     constructor(seconds = 0) {
         super();
         this.seconds = seconds;
-        this.startTime = new Date().getTime() - seconds * 1000;
-        this.unexecutedTimeouts = [];
+        this.intervalId = null;
     }
 
     /**
-     * 开始一个任务
+     * 开始计时任务
      *
      * @returns {Timer} 当前对象
      */
     start() {
-        this.seconds++;
-        this._clearUnexecutedTimeouts();
-        // 计算时间误差值
-        let offset = new Date().getTime() - (this.startTime + this.seconds * 1000);
-        let nextTime = 1000 > offset ? (1000 - offset) : 0;
-        this.unexecutedTimeouts.push(setTimeout(() => {
-            this.start();
-        }, nextTime));
-        // 事件的执行不阻塞计时任务
-        setTimeout(() => {
-            this.emit('change', this.seconds, this.format())
-        });
+        this._clearInterval(); // 避免重复启动
+        const startTime = Date.now() - this.seconds * 1000; // 基于当前秒数修正时间
+
+        // 立即触发一次 change 事件，推送当前时间
+        this.emit('change', this.seconds, this.format());
+
+        // 然后每秒触发更新
+        this.intervalId = setInterval(() => {
+            const currentTime = Date.now();
+            this.seconds = Math.floor((currentTime - startTime) / 1000);
+            this.emit('change', this.seconds, this.format()); // 更新 UI
+        }, 1000); // 每秒触发一次
         return this;
     }
 
     /**
-     * 停止一个任务
+     * 停止计时任务
      *
      * @returns {Timer} 当前对象
      */
     stop() {
-        this._clearUnexecutedTimeouts();
+        this._clearInterval();
         this.seconds = 0;
-
         return this;
     }
 
     /**
-     * 任务重启
+     * 重启任务
      */
     restart(seconds = 0) {
         this.stop();
-        // 设置计时开始时间
         this.seconds = seconds;
-        this.startTime = new Date().getTime() - seconds * 1000;
         this.start();
     }
 
     /**
-     * 清除未执行的任务
+     * 清除定时器
      *
      * @private
      */
-    _clearUnexecutedTimeouts() {
-        this.unexecutedTimeouts.forEach((unexecuted) => {
-            clearTimeout(unexecuted);
-        });
-        this.unexecutedTimeouts = [];
+    _clearInterval() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
     }
 
+    /**
+     * 格式化时间
+     *
+     * @param {Array} separator 分隔符 ['小时:','分钟:','秒']
+     * @returns {string} 格式化后的时间
+     */
     format(separator = [':', ':', '']) {
-        let secondTime = this.seconds;// 秒
-        let minuteTime = 0;// 分
-        let hourTime = 0;// 小时
-        if (secondTime >= 60) {
-            minuteTime = Math.floor(secondTime / 60);
-            secondTime = Math.floor(secondTime % 60);
-            if (minuteTime >= 60) {
-                hourTime = Math.floor(minuteTime / 60);
-                minuteTime = Math.floor(minuteTime % 60);
-            }
-        }
-        let result = "";
-        if (hourTime > 0) {
-            result += ((hourTime < 10) ? '0' : '') + hourTime + separator[0];
-        }
-        result += ((minuteTime < 10) ? '0' : '') + minuteTime + separator[1];
-        result += ((secondTime < 10) ? '0' : '') + secondTime + separator[2];
-        return result;
+        let secondTime = this.seconds;
+        const hours = Math.floor(secondTime / 3600);
+        secondTime %= 3600;
+        const minutes = Math.floor(secondTime / 60);
+        const seconds = secondTime % 60;
+
+        // 格式化为 HH:MM:SS 的格式
+        return [
+            hours > 0 ? String(hours).padStart(2, '0') + separator[0] : '',
+            String(minutes).padStart(2, '0') + separator[1],
+            String(seconds).padStart(2, '0') + separator[2],
+        ].join('');
     }
 }
-
 
 export default Timer;

@@ -145,7 +145,7 @@ class PhoneBar extends EventEmitter {
 
         this.getComponent('agentState').on('agentStateSelected', this._onAgentStateSelected.bind(this));
         this.getComponent('openDialPad').on('click', () => {
-            this._showDialPad({btnName: '呼叫', onDynamicButtonClick: this.makeCall.bind(this, null)});
+            this._showDialPad({btnName: '呼叫', onDynamicButtonClick: () => this.makeCall(null) && this.dialPad.hide()});
         });
         this.getComponent('answer').on('click', () => {
             this.agentApi.answerCall();
@@ -177,10 +177,7 @@ class PhoneBar extends EventEmitter {
         });
         this.getComponent('conference').on('itemClick', this.onConferenceItemClick.bind(this));
         this.getComponent('secondDial').on('click', () => {
-            this._showDialPad({title: '二次拨号', onDynamicButtonClick: () => {
-                const phoneNumber = this.dialPad.getPhoneNumber()
-                this.agentApi.sendDTMF(null, phoneNumber)
-            }});
+            this._showDialPad({title: '二次拨号', onDynamicButtonClick: () => this.sendDTMF(null, this.dialPad.getPhoneNumber()) && this.dialPad.hide()});
         });
 
         // 三方通话缓存数据
@@ -396,8 +393,8 @@ class PhoneBar extends EventEmitter {
                 // 两步转被叫方挂断
                 if (line.lineState === LineState.IDLE && callInfo.otherDN === data.sendBy && data.thirdDN === data.sendBy) {
                     this.phoneBarComponent.changeButtonWhenDoubleDiscon(); // 转出按钮置灰
-                    if (data.sendBy.length === 9) {
-                        utils.showMessage('坐席 ' + data.sendBy + ' 已挂断！');
+                    if (data.sendBy.length === 18) {
+                        utils.showMessage('坐席 ' + data.sendBy.slice(-4) + ' 已挂断！');
                     } else {
                         utils.showMessage('外线 ' + data.sendBy + ' 已挂断！');
                     }
@@ -580,6 +577,20 @@ class PhoneBar extends EventEmitter {
 
         // 调用底层的 makeCall
         return this.agentApi.makeCall(phoneNumber, ...Object.values(defaultOptions)); 
+    }
+
+    /**
+     * 二次拨号
+     * @param lineId 要挂断的线路ID，当为空时取当前默认线路
+     * @param digit 按键
+     */
+    sendDTMF(lineId, digit) {
+        if (utils.checkPhoneNumber(digit)) {
+            digit = utils.trim(digit);
+            return this.agentApi.sendDTMF(lineId, digit);
+        } else {
+            return false;
+        }
     }
 
     /**

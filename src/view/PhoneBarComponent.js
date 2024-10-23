@@ -83,7 +83,21 @@ class PhoneBarComponent extends EventEmitter {
                 'name': 'secondDial', 'component': new MultilevelMenu({
                     title: '二次拨号',
                     iconClassName: 'second-dial',
+                    visible: false,
                 }), 'sort': 10
+            },
+            {
+                'name': 'mute', 'component': new PhoneBarButton({
+                    title: '静音',
+                    iconClassName: 'mute',
+                }), 'sort': 11
+            },
+            {
+                'name': 'unmute', 'component': new PhoneBarButton({
+                    title: '取消静音',
+                    iconClassName: 'unmute',
+                    visible: false,
+                }), 'sort': 12
             }
         ];
 
@@ -135,6 +149,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.getButtonComponent("mute").disable();
+        this.getButtonComponent("unmute").disable();
     }
 
     /**
@@ -151,6 +167,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.getButtonComponent("mute").disable();
+        this.getButtonComponent("unmute").disable();
     }
 
     /**
@@ -167,6 +185,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.getButtonComponent("mute").disable();
+        this.getButtonComponent("unmute").disable();
     }
 
     /**
@@ -183,6 +203,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.getButtonComponent("mute").disable();
+        this.getButtonComponent("unmute").disable();
     }
 
     /**
@@ -199,6 +221,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.resetMuteButton();
     }
 
     /**
@@ -252,6 +275,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("transfer").disable();
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").enable();
+        this.getButtonComponent("mute").enable();
+        this.getButtonComponent("unmute").enable();
         if (callType === CallType.INTERNAL) {
             this.getButtonComponent("transfer").disable();
         } else if (callType === CallType.CONSULT) {
@@ -294,6 +319,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").disable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.resetMuteButton();
     };
 
     /**
@@ -310,6 +336,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("rollout").enable();
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
+        this.getButtonComponent("mute").disable();
+        this.getButtonComponent("unmute").disable();
     }
 
     /**
@@ -336,6 +364,18 @@ class PhoneBarComponent extends EventEmitter {
         console.log('changeButtonWhenCustomerDiscon');
         this.getButtonComponent("openDialPad").disable();
         this.getButtonComponent("hangup").enable();
+    }
+
+    /**
+     * 重置静音按钮状态
+     */
+    resetMuteButton() {
+        const muteBtn = this.getButtonComponent("mute");
+        muteBtn.show();
+        muteBtn.disable();
+        const unmuteBtn = this.getButtonComponent("unmute");
+        unmuteBtn.hide();
+        unmuteBtn.disable();
     }
 
     mergeRemoteActionList(newData) {

@@ -179,6 +179,16 @@ class PhoneBar extends EventEmitter {
         this.getComponent('secondDial').on('click', () => {
             this._showDialPad({title: '二次拨号', onDynamicButtonClick: () => this.sendDTMF(null, this.dialPad.getPhoneNumber()) && this.dialPad.hide()});
         });
+        this.getComponent('mute').on('click', (e, _this) => {
+            _this.hide();
+            this.agentApi.requestSilence();
+            this.getComponent('unmute').show();
+        });
+        this.getComponent('unmute').on('click', (e, _this) => {
+            _this.hide();
+            this.agentApi.requestSilenceOff();
+            this.getComponent('mute').show();
+        });
 
         // 三方通话缓存数据
         this.threewayCallData = [];

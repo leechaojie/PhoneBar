@@ -36,7 +36,7 @@
 }
 
 .phonebar-nav .operation {
-    min-width: 48px;
+        min-width: 48px;
     cursor: pointer;
     float: left;
     position: relative
@@ -147,6 +147,24 @@
     background-position: -160px -20px
 }
 
+/* 静音 */
+.phonebar-nav .operation .mute {
+    background-position: -180px 0
+}
+
+.phonebar-nav .operation.disabled .mute {
+    background-position: -180px -20px
+}
+
+/* 取消静音 */
+.phonebar-nav .operation .unmute {
+    background-position: -200px 0
+}
+
+.phonebar-nav .operation.disabled .unmute {
+    background-position: -200px -20px
+}
+
 .phonebar-nav .operation_text {
     display: block;
     min-width: 35px;
@@ -184,8 +202,7 @@
 .phonebar-nav .call>span.agentstate-busy {
     background-position: -28px 0;
 }
-
-.phonebar-nav .call>span.agentstate-rest {
+.phonebar-nav .call>span.agentstate-resting {
     background-position: -56px 0;
 }
 
@@ -310,8 +327,6 @@
     max-height: 490px;
     overflow-y: auto;
     overflow-x: clip;
-    padding: 3px 0;
-    left: unset;
     right: -120px;
 }
 

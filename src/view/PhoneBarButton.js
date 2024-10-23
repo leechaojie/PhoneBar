@@ -36,7 +36,7 @@ class PhoneBarButton extends EventEmitter {
             let rootNode = this.rootNode = document.createElement('li');
             rootNode.id = this.id;
             rootNode.className = this._className;
-            rootNode.onclick = (e) => {this.emit('click', e)};
+            rootNode.onclick = (e) => {this.emit('click', e, this)};
 
             this._visible || this.hide();
             this._enabled || rootNode.classList.add(this._disabledClassName);

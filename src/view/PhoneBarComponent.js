@@ -83,7 +83,6 @@ class PhoneBarComponent extends EventEmitter {
                 'name': 'secondDial', 'component': new MultilevelMenu({
                     title: '二次拨号',
                     iconClassName: 'second-dial',
-                    visible: false,
                 }), 'sort': 10
             },
             {

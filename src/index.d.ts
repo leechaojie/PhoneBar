@@ -224,17 +224,12 @@ declare namespace PhoneBar {
     /**
      * Stomp WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
      */
-    stompClient?: Client;
+    stompClient?: any;
     
     /**
      * CTI 服务器地址
      */
     proxyUrl: string;
-
-    /**
-     * SIP服务地址
-     */
-    sipServerUrl?: string;
 
     /**
      * 是否自动启动软电话
@@ -244,20 +239,9 @@ declare namespace PhoneBar {
     startupSoftPhone: boolean;
 
     /**
-     * 调试消息
-     * 
-     * @default false
-     * 请注意，输出可能非常详细，并且可能包含敏感信息（如密码、令牌等）。
+     * SIP服务地址
      */
-    debug?: boolean;
-
-    /**
-     * 开启系统日志
-     * 
-     * @default true
-     * 控制台打印话条日志。
-     */
-    log?: boolean;
+    sipServerUrl?: string;
 
     /**
      * 账号
@@ -293,7 +277,7 @@ declare namespace PhoneBar {
      * 密码
      */
     password: string;
-
+    
     /**
      * 密码类型 默认不加密
      *
@@ -323,22 +307,50 @@ declare namespace PhoneBar {
     defaultQueue: string;
 
     /**
-     * 通话后自动置闲
+     * 自动提醒
+     *
+     * @remarks
+     * 每隔*分钟会自动提醒某一状态是否超时
+     * @default 0 不提醒
+     */
+    tipTime: number;
+
+    /**
+     * 通话后自动进入就绪状态
      *
      * @remarks
      * null 使用服务端配置 true 开启 false 关闭
+     * @default null
      */
     autoIdleWhenAfterWork?: boolean | null;
 
     /**
+     * 通话后持续设置时间后会自动进入就绪状态
+     *
+     * @default 0
+     */
+    maxAfterWorkTime?: number;
+
+    /**
      * 登录后自动置闲
+     * 
+     * @default false
      */
     autoIdleWhenLogin?: boolean;
 
     /**
      * 是否手机随行 即手机在线
+     * 
+     * @default false
      */
     isPhoneTakeAlong?: boolean;
+
+    /**
+     * 手机随行开启后，是否允许切换除通话之外的状态
+     * 
+     * @default false
+     */
+    allowPhoneBarStateControl?: boolean;
 
     /**
      * 随行手机号
@@ -363,6 +375,22 @@ declare namespace PhoneBar {
      * @property {17} - 自定义7
      */
     customNotReadyReason?: CustomNotReadyReason[];
+
+    /**
+     * 调试消息
+     * 
+     * @default false
+     * 请注意，输出可能非常详细，并且可能包含敏感信息（如密码、令牌等）。
+     */
+    debug?: boolean;
+
+    /**
+     * 开启系统日志
+     * 
+     * @default true
+     * 控制台打印话条日志。
+     */
+    log?: boolean;
 
     /**
      * 坐席状态变更事件

@@ -2,6 +2,8 @@ export interface IObject<T = any> {
   [key: string]: T;
 }
 
+export declare type DefaultCallbackType = () => void;
+
 /**
  * 需要修改的坐席状态码
  * @property {3} - 示忙
@@ -211,4 +213,17 @@ export interface MakeCallOptions {
    * @default null
    */
   numberId?: string | null;
+}
+
+export interface Contact {
+  agentId: string;
+  name: string;
+}
+
+export interface ShowDialPadOptions {
+  title?: string;
+  contacts: Contact[];
+  btnName: string;
+  onDynamicButtonClick: DefaultCallbackType;
+  show: boolean;
 }

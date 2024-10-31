@@ -10,7 +10,9 @@ import {
   CustomNotReadyReason,
   ComponentName,
   MakeCallOptions,
+  ShowDialPadOptions
 } from "./types/interface";
+import { DialPad } from "./types/DialPad";
 
 declare class PhoneBar extends EventEmitter {
   constructor(options: PhoneBar.Options);
@@ -35,11 +37,16 @@ declare class PhoneBar extends EventEmitter {
   readonly connection: CTIConnection;
 
   /**
+   * 拨号盘组件
+   * @readonly
+   */
+  readonly dialPad: DialPad;
+
+  /**
    * 根据名称获取组件
    * @param {ComponentName} componentName 按钮名称
    */
   getComponent(componentName: ComponentName): PhoneBarButton | null;
-
 
   /**
    * 主动拨打呼叫 options {@link MakeCallOptions}
@@ -103,7 +110,7 @@ declare class PhoneBar extends EventEmitter {
   /**
    * 转外线
    * @private
-   * @param num 转外线的号码 
+   * @param num 转外线的号码
    */
   _transferThis(num?: string): void;
 
@@ -117,36 +124,46 @@ declare class PhoneBar extends EventEmitter {
    * 显示拨号盘
    * @private
    */
-  _showDialPad(): void;
+  _showDialPad(options: ShowDialPadOptions): void;
 
   /**
    * 请求转接坐席数据
-   * 
+   *
    * 向 CTI 服务器发送请求
    * @param limitAgent 查询座席名字或账号
    * @param state 查询状态-可多选
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestTransferAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
+  requestTransferAgentData(
+    limitAgent?: string,
+    state?: string[],
+    queueCode?: string,
+    grpStreamNumber?: string
+  ): void;
 
   /**
    * 请求技能组列表
-   * 
+   *
    * 向 CTI 服务器发送请求
    */
-  requestSkillList(): void
+  requestSkillList(): void;
 
   /**
    * 请求会议内待转接数据
-   * 
+   *
    * 向 CTI 服务器发送请求
    * @param limitAgent 查询座席名字或账号
    * @param state 查询状态
    * @param queueCode 查询技能组
    * @param grpStreamNumber 查询班组
    */
-  requestConferenceAgentData(limitAgent?: string, state?: string[], queueCode?: string, grpStreamNumber?: string): void
+  requestConferenceAgentData(
+    limitAgent?: string,
+    state?: string[],
+    queueCode?: string,
+    grpStreamNumber?: string
+  ): void;
 
   /**
    * 销毁组件
@@ -225,8 +242,8 @@ declare namespace PhoneBar {
     /**
      * Stomp WebSocket客户端，配置客户端后内部不在创建新的WebSocket链接
      */
-    stompClient?: any;
-    
+    stompClient?: Client;
+
     /**
      * CTI 服务器地址
      */
@@ -278,7 +295,7 @@ declare namespace PhoneBar {
      * 密码
      */
     password: string;
-    
+
     /**
      * 密码类型 默认不加密
      *
@@ -334,21 +351,21 @@ declare namespace PhoneBar {
 
     /**
      * 登录后自动置闲
-     * 
+     *
      * @default false
      */
     autoIdleWhenLogin?: boolean;
 
     /**
      * 是否手机随行 即手机在线
-     * 
+     *
      * @default false
      */
     isPhoneTakeAlong?: boolean;
 
     /**
      * 手机随行开启后，是否允许切换除通话之外的状态
-     * 
+     *
      * @default false
      */
     allowPhoneBarStateControl?: boolean;
@@ -364,7 +381,7 @@ declare namespace PhoneBar {
     autoAnswer?: boolean;
 
     /**
-     * 自定义状态 
+     * 自定义状态
      * 可修改状态名称，以及扩展自定义状态
      * @property {3} - 示忙
      * @property {5}- 休息
@@ -379,7 +396,7 @@ declare namespace PhoneBar {
 
     /**
      * 调试消息
-     * 
+     *
      * @default false
      * 请注意，输出可能非常详细，并且可能包含敏感信息（如密码、令牌等）。
      */
@@ -387,7 +404,7 @@ declare namespace PhoneBar {
 
     /**
      * 开启系统日志
-     * 
+     *
      * @default true
      * 控制台打印话条日志。
      */
@@ -479,7 +496,7 @@ declare namespace PhoneBar {
 
     /**
      * 自定义转接按钮点击事件
-     * 
+     *
      * 配置此事件后，点击转接按钮将不会展示默认UI
      * @param {Array<Object>} data 转接数据
      */
@@ -487,12 +504,11 @@ declare namespace PhoneBar {
 
     /**
      * 自定义会议按钮点击事件
-     * 
+     *
      * 配置此事件后，点击会议按钮将不会展示默认UI
      * @param {Array<Object>} data 会议数据
      */
     onConferenceClick?: (data: IObject[]) => void;
-
   }
 }
 

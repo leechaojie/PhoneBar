@@ -1,4 +1,5 @@
 /// <reference lib="dom"/>
+import EventEmitter from "eventemitter3";
 
 import AgentApi from "./types/agentApi";
 import CTIConnection from "./types/CTIConnection";
@@ -11,7 +12,7 @@ import {
   MakeCallOptions,
 } from "./types/interface";
 
-declare class PhoneBar {
+declare class PhoneBar extends EventEmitter {
   constructor(options: PhoneBar.Options);
 
   /**

@@ -1,8 +1,9 @@
+import EventEmitter from "eventemitter3";
+
 /**
  * 按钮实例
  */
-declare class PhoneBarButton {
-
+declare class PhoneBarButton extends EventEmitter {
   /**
    * id
    */
@@ -34,4 +35,4 @@ declare class PhoneBarButton {
   disable(): void;
 }
 
-export default PhoneBarButton
+export default PhoneBarButton;

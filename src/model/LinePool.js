@@ -252,6 +252,8 @@ class LinePool extends EventEmitter {
         let dnis = data.dnis;//被叫号码
         let callSid = data.auuid;//呼叫唯一标识
         let cityCode = data.cityCode;//归属地
+        let province = data.province; // 省份
+        let city = data.city; // 城市
 
         let talkSec = data.talkSec || 0;
 
@@ -267,6 +269,8 @@ class LinePool extends EventEmitter {
             dnis,
             callSid,
             cityCode,
+            province,
+            city,
             talkSec,
             otherDN,
         };

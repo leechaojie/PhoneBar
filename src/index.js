@@ -325,7 +325,7 @@ class PhoneBar extends EventEmitter {
 
         // 坐席状态变更事件处理函数
         this.agent.on('agentStateChange', (state) => {
-            if (this.log) console.log("------坐席状态变更事件处理函数--------------");
+            if (this.options.log) console.log("------坐席状态变更事件处理函数--------------");
             this.getComponent('agentState').changeAgentState(state);
             this.handlerOnMediaNotification('agentStateChange', state);       
 
@@ -351,39 +351,36 @@ class PhoneBar extends EventEmitter {
 
         // 线路状态变更事件处理
         this.linePool.on('lineDataChange', (line, callInfo, data) => {
-            if (this.log) console.log("====线路状态变更事件处理========");
+            if (this.options.log) console.log("====线路状态变更事件处理========");
             if (this.linePool.getCurrentLineId() === line.id) {
                 if (line.lineState === LineState.IDLE) {
                     this.agentApi.agentNotReady(0);
                     this.phoneBarComponent.changeButtonWhenIdle();
                     this.emit('hangup', callInfo, data);
-                    if (this.log) console.log(JSON.stringify(data)+"--hangup事件-----"+JSON.stringify(callInfo));
+                    if (this.options.log) console.log(JSON.stringify(data)+"--hangup事件-----"+JSON.stringify(callInfo));
                     this.handlerOnMediaNotification('hangup', callInfo);
                 } else if (line.lineState === LineState.DIALING) {
                     this.agent.setAgentState(Agent.RINGING);
-                    //if (this.log) console.log("--设置坐席状态-----"+line.lineState);
                     //this.handlerOnMediaNotification('agentStateChange', line.lineState);        
                     this.phoneBarComponent.changeButtonWhenDialing(callInfo.callType);
                     this.emit('ringing', callInfo, data);
-                    if (this.log) console.log(JSON.stringify(data)+"--设置振铃事件-----"+JSON.stringify(callInfo));
+                    if (this.options.log) console.log(JSON.stringify(data)+"--设置振铃事件-----"+JSON.stringify(callInfo));
                     this.handlerOnMediaNotification('ringing', callInfo);    
                 } else if (line.lineState === LineState.RINGING) {
                     this.agent.setAgentState(Agent.RINGING);
-                    //if (this.log) console.log("--设置坐席状态-----"+line.lineState);
                     //this.handlerOnMediaNotification('agentStateChange', line.lineState); 
                     this.phoneBarComponent.changeButtonWhenRinging();
                     this.emit('ringing', callInfo, data);
-                    if (this.log) console.log(JSON.stringify(data)+"--设置振铃事件-----"+JSON.stringify(callInfo));
+                    if (this.options.log) console.log(JSON.stringify(data)+"--设置振铃事件-----"+JSON.stringify(callInfo));
                     this.handlerOnMediaNotification('ringing', callInfo);
                 } else if (line.lineState === LineState.HELD) {
                     this.phoneBarComponent.changeButtonWhenHold();
                 } else if (line.lineState === LineState.TALKING) {
                     this.agent.setAgentState(Agent.TALKING);
-                    //if (this.log) console.log("--设置坐席状态-----"+line.lineState);
                     //this.handlerOnMediaNotification('agentStateChange', line.lineState); 
                     this.phoneBarComponent.changeButtonWhenTalking(callInfo.callType);
                     this.emit('talking', callInfo, data);
-                    if (this.log) console.log(JSON.stringify(data)+"--talking事件-----"+JSON.stringify(callInfo));
+                    if (this.options.log) console.log(JSON.stringify(data)+"--talking事件-----"+JSON.stringify(callInfo));
                     this.handlerOnMediaNotification('talking', callInfo);
                 }
             }
@@ -422,7 +419,7 @@ class PhoneBar extends EventEmitter {
 
             if (data.thisRole !== 5 && callInfo.callType !== CallType.INTERNAL && data.attachDatas['variable_thirdPartyRole'] == null) {
                 this.emit('screenPopup', line.lineState, callInfo);
-                if (this.log) console.log("--screenPopup事件-----"+JSON.stringify(callInfo));
+                if (this.options.log) console.log("--screenPopup事件-----"+JSON.stringify(callInfo));
                 this.handlerOnMediaNotification('screenPopup', callInfo);
             }
         });

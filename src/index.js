@@ -106,6 +106,7 @@ class PhoneBar extends EventEmitter {
         super();
         const options = this.options = arguments[0];
         options.customNotReadyReason = customNotReadyReason;
+        this.isFirstAutoSavePopupConfigUpdate = false;
 
         // 初始化线路信息
         this.linePool = new LinePool();
@@ -257,7 +258,11 @@ class PhoneBar extends EventEmitter {
             }
             // 如果服务端与本地不同，更新服务端配置
             else if (this.agentConfig.autoIdleWhenAfterWork !== data.autoSavePopup && data.maxAfterworkTime !== 0) {
-                this.agentApi.setAutoReady(this.agentConfig.autoIdleWhenAfterWork);
+                if (!this.isFirstAutoSavePopupConfigUpdate) {
+                    // 只允许更新一次
+                    this.agentApi.setAutoReady(this.agentConfig.autoIdleWhenAfterWork);
+                    this.isFirstAutoSavePopupConfigUpdate = true;
+                }
             }
             if (this.agentConfig.autoIdleWhenAfterWork) {
                 if (data.maxAfterworkTime === 0) {

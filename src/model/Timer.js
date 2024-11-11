@@ -43,7 +43,11 @@ class Timer extends EventEmitter {
     restart(seconds = 0) {
         this.stop(); // 停止当前 Worker
         this.seconds = seconds;
-        this.start(); // 重新启动 Worker
+        
+        // 立即触发更新事件，将时间显示为 `00:00`
+        this.emit('change', this.seconds, this.format());
+
+        this.start(); // 重新启动 Worker，从零开始计时
         return this;
     }
 

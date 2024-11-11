@@ -198,8 +198,9 @@ declare class AgentApi {
 
   /**
    * 获取可监控的坐席信息
+   * @param {Boolean} isAutoReady 话后自动就绪 默认 false
    */
-  setAutoReady(): void;
+  setAutoReady(isAutoReady?: boolean): void;
 
   /**
    * 发送最新排队信息请求

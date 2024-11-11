@@ -2,6 +2,7 @@
 import EventEmitter from "eventemitter3";
 
 import AgentApi from "./types/agentApi";
+import AgentConfig from './types/AgentConfig';
 import CTIConnection from "./types/CTIConnection";
 import PhoneBarButton from "./types/phoneBarButton";
 import { Client } from "@stomp/stompjs";
@@ -28,6 +29,7 @@ declare class PhoneBar extends EventEmitter {
    * 此对象用于调用 AgentApi 接口
    */
   readonly agentApi: AgentApi;
+  readonly agentConfig: AgentConfig;
 
   /**
    * CTIConnection 对象

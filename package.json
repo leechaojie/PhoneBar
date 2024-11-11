@@ -24,6 +24,7 @@
     "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
+    "@types/stompjs": "^2.3.9",
     "autoprefixer": "^9.2.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.1",

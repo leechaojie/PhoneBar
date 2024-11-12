@@ -112,6 +112,15 @@ class CTIConnection extends WebSocketBaseClient {
             this.sendMessage(lToken);
             return true;
         } else {
+            console.log("%c没有与CTI服务器建立连接---------->", "color:red");
+            let lToken = {
+                thisDN: this.agent.thisDN,
+                agentID: this.agent.agentID,
+                type: "request",
+                message: data
+            };
+            console.log('sendMessage', JSON.stringify(lToken, null, 4));
+            console.log("%c没有与CTI服务器建立连接----------<", "color:red");
             utils.showMessage("没有与CTI服务器建立连接！");
             return false;
         }

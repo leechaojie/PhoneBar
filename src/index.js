@@ -311,9 +311,11 @@ class PhoneBar extends EventEmitter {
             // 更新状态持续时长
             this.getComponent('agentState').setAgentStateTimer(timerValue);
 
-            let _tipTime = this.agentConfig.tipTime;
-            if (_tipTime > 0 && seconds > 0 && seconds % (_tipTime * 60) === 0 && this.agent.state !== Agent.BUSY) {
-                let timeTips = `您已保持"${this.agent.getCurrentStateName()}"状态${this.agent.stateTimer.format(['小时','分钟','秒'])}`;
+            const _tipTime = this.agentConfig.tipTime; 
+            const notTipStates = [Agent.READY, Agent.TALKING, Agent.RINGING, Agent.OFFLINE];
+            const shouldShowTip = _tipTime > 0 && seconds > 0 && seconds % (_tipTime * 60) === 0 && !notTipStates.includes(this.agent.state);
+            if (shouldShowTip) {
+                const timeTips = `您已保持"${this.agent.getCurrentStateName()}"状态${this.agent.stateTimer.format(['小时','分钟','秒'])}`;
                 utils.showMessage(timeTips);
             }
 
@@ -940,6 +942,8 @@ class PhoneBar extends EventEmitter {
 
         this.agentApi.agentLogout();
         this.connection.doClose();
+        // 销毁Timer
+        this.agent.stateTimer.stop()
         !this.softPhoneConnection || this.softPhoneConnection.doClose();
     }
 

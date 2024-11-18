@@ -573,11 +573,6 @@ class PhoneBar extends EventEmitter {
             return false;
         }
 
-        // 设置号码类型
-        if (/(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber)) {
-            defaultOptions.type = 1;
-        }
-
         // 处理号码
         if (phoneNumber.length === 4 && this.agent.tid !== '0') {
             phoneNumber = this.agent.tid.length === 5 ? this.agent.tid + phoneNumber : "000002" + this.agent.tid + "08" + phoneNumber;
@@ -587,6 +582,11 @@ class PhoneBar extends EventEmitter {
         if (!phoneNumber) {
             console.error("Phone number is required.");
             return false;
+        }
+
+        // 设置号码类型
+        if (/(^000002[0-9]{6}08[0-9]{4}$)|(^[0-9]{5}[1-79][0-9]{3}$)/.test(phoneNumber)) {
+            defaultOptions.type = 1;
         }
 
         // 调用底层的 makeCall

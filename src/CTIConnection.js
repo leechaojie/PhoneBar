@@ -194,7 +194,8 @@ class CTIConnection extends WebSocketBaseClient {
             data.messageId === MessageID.EventAbandoned) {
             this.linePool.updateLineDate(data);
         } else if (data.messageId === MessageID.EventError) {
-            utils.showMessage(data.errorMessage);
+            // utils.showMessage(data.errorMessage);
+            console.error('MessageID.EventError', data.errorMessage);
         } else if(data.messageId === 527) {
             this.emit('userInputCompleted', data);
         }  else if (data.messageId === MessageID.EventLinkDisconnected && data.reason === 1) {

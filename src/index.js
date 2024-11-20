@@ -315,7 +315,7 @@ class PhoneBar extends EventEmitter {
             const notTipStates = [Agent.READY, Agent.TALKING, Agent.RINGING, Agent.OFFLINE];
             const shouldShowTip = _tipTime > 0 && seconds > 0 && seconds % (_tipTime * 60) === 0 && !notTipStates.includes(this.agent.state);
             if (shouldShowTip) {
-                const timeTips = `您已保持"${this.agent.getCurrentStateName()}"状态${this.agent.stateTimer.format(['小时','分钟','秒'])}`;
+                const timeTips = `您已保持"${this.agent.getCurrentStateName()}"状态${this.agent.stateTimer.format(['小时','分钟'])}`;
                 utils.showMessage(timeTips);
             }
 

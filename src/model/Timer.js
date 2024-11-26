@@ -43,7 +43,7 @@ class Timer extends EventEmitter {
     restart(seconds = 0) {
         this.stop(); // 停止当前 Worker
         this.seconds = seconds;
-        
+
         // 立即触发更新事件，将时间显示为 `00:00`
         this.emit('change', this.seconds, this.format());
 
@@ -100,22 +100,36 @@ class Timer extends EventEmitter {
     /**
      * 格式化时间
      *
-     * @param {Array} separator 分隔符 ['小时:','分钟:','秒']
+     * @param {Array<string>} separator 分隔符，按照时分秒顺序 例如 ['小时', '分钟', '秒'] 或 ['小时', '分钟'] 或 ['小时']
      * @returns {string} 格式化后的时间
      */
-    format(separator = [':', ':', '']) {
+    format(separator = []) {
         let secondTime = this.seconds;
         const hours = Math.floor(secondTime / 3600);
         secondTime %= 3600;
         const minutes = Math.floor(secondTime / 60);
         const seconds = secondTime % 60;
 
-        // 格式化为 HH:MM:SS 的格式
-        return [
-            hours > 0 ? String(hours).padStart(2, '0') + separator[0] : '',
-            String(minutes).padStart(2, '0') + separator[1],
-            String(seconds).padStart(2, '0') + separator[2],
-        ].join('');
+
+        // 如果没有传入分隔符，使用默认的格式
+        // 当没有传入分隔符时，使用默认格式，并应用 hours>0 的规则
+        if (separator.length === 0) {
+            if (hours > 0) {
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        const timeValues = [hours, minutes, seconds];
+        let result = '';
+
+        // 只处理传入的分隔符数量对应的时间位数
+        for (let i = 0; i < separator.length; i++) {
+            result += String(timeValues[i]).padStart(2, '0');
+            result += separator[i];
+        }
+
+        return result;
     }
 }
 

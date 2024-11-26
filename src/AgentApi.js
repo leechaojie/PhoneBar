@@ -527,6 +527,55 @@ class AgentApi {
         }
     }
 
+    /**
+     * 开启耳语
+     * @param lineId
+     */
+    whisperCall(lineId) {
+        if (typeof(lineId) === 'undefined' || lineId == null) {
+            lineId = this.linePool.getCurrentLineId();
+        }
+        let line = this.linePool.getLine(lineId);
+        if (null == line) {
+            utils.showMessage("线路ID错误");
+        } else if (line.lineState === LineState.IDLE) {
+            utils.showMessage("当前线路没有电话");
+        } else {
+            let data = {
+                "messageId": 303,
+                "thisDN": this.agent.thisDN,
+                "agentID": this.agent.agentID,
+                "callID": line.callId
+            };
+            this.connection.send(data);
+        }
+    }
+    
+    /**
+     * 关闭耳语
+     * @param lineId
+     */
+    HangupWhisperCall(lineId) {
+        if (typeof(lineId) === 'undefined' || lineId == null) {
+            lineId = this.linePool.getCurrentLineId();
+        }
+        let line = this.linePool.getLine(lineId);
+        if (null == line) {
+            utils.showMessage("线路ID错误");
+        } else if (line.lineState === LineState.IDLE) {
+            utils.showMessage("当前线路没有电话");
+        } else {
+            let data = {
+                "messageId": 304,
+                "thisDN": this.agent.thisDN,
+                "agentID": this.agent.agentID,
+                "callID": line.callId
+            };
+            this.connection.send(data);
+        }
+    }
+
+
     // cti.updateUserData(lineId, userDataKeys, userDataValues) {
     //     checkLineId(lineId);
     //     var thisDN = cti.Agent.getInstance().getThisDN();

@@ -165,6 +165,24 @@
     background-position: -200px -20px
 }
 
+/* 耳语 */
+.phonebar-nav .operation .whisper {
+    background-position: -220px 0
+}
+
+.phonebar-nav .operation.disabled .whisper {
+    background-position: -220px -20px
+}
+
+/* 取消耳语 */
+.phonebar-nav .operation .hangupWhisper {
+    background-position: -240px 0
+}
+
+.phonebar-nav .operation.disabled .hangupWhisper {
+    background-position: -240px -20px
+}
+
 .phonebar-nav .operation_text {
     display: block;
     min-width: 35px;

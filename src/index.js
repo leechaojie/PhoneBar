@@ -190,6 +190,16 @@ class PhoneBar extends EventEmitter {
             this.agentApi.requestSilenceOff();
             this.getComponent('mute').show();
         });
+        this.getComponent("whisper").on("click", (e, _this) => {
+          _this.hide();
+          this.agentApi.whisperCall();
+          this.getComponent("hangupWhisper").show();
+        });
+        this.getComponent("hangupWhisper").on("click", (e, _this) => {
+          _this.hide();
+          this.agentApi.HangupWhisperCall();
+          this.getComponent("whisper").show();
+        });
 
         // 三方通话缓存数据
         this.threewayCallData = [];

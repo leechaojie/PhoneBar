@@ -97,6 +97,19 @@ class PhoneBarComponent extends EventEmitter {
                     iconClassName: 'unmute',
                     visible: false,
                 }), 'sort': 12
+            },
+            {
+                'name': 'whisper', 'component': new PhoneBarButton({
+                    title: '耳语',
+                    iconClassName: 'whisper',
+                }), 'sort': 13
+            },
+            {
+                'name': 'hangupWhisper', 'component': new PhoneBarButton({
+                    title: '取消耳语',
+                    iconClassName: 'hangup-whisper',
+                    visible: false,
+                }), 'sort': 14
             }
         ];
 
@@ -150,6 +163,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("secondDial").disable();
         this.getButtonComponent("mute").disable();
         this.getButtonComponent("unmute").disable();
+        this.getButtonComponent("whisper").disable();
+        this.getButtonComponent("hangupWhisper").disable();
     }
 
     /**
@@ -168,6 +183,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("secondDial").disable();
         this.getButtonComponent("mute").disable();
         this.getButtonComponent("unmute").disable();
+        this.getButtonComponent("whisper").disable();
+        this.getButtonComponent("hangupWhisper").disable();
     }
 
     /**
@@ -186,6 +203,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("secondDial").disable();
         this.getButtonComponent("mute").disable();
         this.getButtonComponent("unmute").disable();
+        this.getButtonComponent("whisper").disable();
+        this.getButtonComponent("hangupWhisper").disable();
     }
 
     /**
@@ -204,6 +223,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("secondDial").disable();
         this.getButtonComponent("mute").disable();
         this.getButtonComponent("unmute").disable();
+        this.getButtonComponent("whisper").disable();
+        this.getButtonComponent("hangupWhisper").disable();
     }
 
     /**
@@ -221,6 +242,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
         this.resetMuteButton();
+        this.resetWhisperButton();
     }
 
     /**
@@ -282,9 +304,12 @@ class PhoneBarComponent extends EventEmitter {
             this.getButtonComponent("hold").disable();
             this.getButtonComponent("transfer").disable();
             this.getButtonComponent("conference").disable();
+        } else if (callType === CallType.MONITOR) {
+            this.getButtonComponent("whisper").enable();
+            this.getButtonComponent("hangupWhisper").enable();
         } else {
-            this.getButtonComponent("transfer").enable();
-            this.getButtonComponent("secondDial").enable();
+          this.getButtonComponent("transfer").enable();
+          this.getButtonComponent("secondDial").enable();
         }
     };
 
@@ -319,6 +344,7 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("conference").disable();
         this.getButtonComponent("secondDial").disable();
         this.resetMuteButton();
+        this.resetWhisperButton();
     };
 
     /**
@@ -337,6 +363,8 @@ class PhoneBarComponent extends EventEmitter {
         this.getButtonComponent("secondDial").disable();
         this.getButtonComponent("mute").disable();
         this.getButtonComponent("unmute").disable();
+        this.getButtonComponent("whisper").disable();
+        this.getButtonComponent("hangupWhisper").disable();
     }
 
     /**
@@ -375,6 +403,18 @@ class PhoneBarComponent extends EventEmitter {
         const unmuteBtn = this.getButtonComponent("unmute");
         unmuteBtn.hide();
         unmuteBtn.disable();
+    }
+
+    /**
+     * 重置耳语按钮状态
+     */
+    resetWhisperButton() {
+        const whisperBtn = this.getButtonComponent("whisper");
+        whisperBtn.show();
+        whisperBtn.disable();
+        const hangupWhisperBtn = this.getButtonComponent("hangupWhisper");
+        hangupWhisperBtn.hide();
+        hangupWhisperBtn.disable();
     }
 
     mergeRemoteActionList(newData) {

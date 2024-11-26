@@ -175,11 +175,11 @@
 }
 
 /* 取消耳语 */
-.phonebar-nav .operation .hangupWhisper {
+.phonebar-nav .operation .hangup-whisper {
     background-position: -240px 0
 }
 
-.phonebar-nav .operation.disabled .hangupWhisper {
+.phonebar-nav .operation.disabled .hangup-whisper {
     background-position: -240px -20px
 }
 
